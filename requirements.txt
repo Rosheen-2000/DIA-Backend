@@ -1,0 +1,6 @@
+django==2.2
+mysqlclient==2.0.1
+aliyun-python-sdk-core-v3==2.13.11
+uwsgi==2.0.18
+pymysql==0.10.0
+sqlparse==0.3.1
