@@ -6,18 +6,18 @@ def login(name, password):
     if user:
         if user.password == password:
             value = encrypt(user.password)
-            return "Pass", value
+            return True, value
         return "Wrong Password", ''
 
     return "Username does not exist.", ''
 
 def register(name, password):
-    if check(name) != 'Pass':
+    if check(name) != True:
         return "Username exists.", ''
     User.objects.create(name=name, password=password)
-    return "Success", encrypt(password)
+    return True, encrypt(password)
 
 def check(name):
     if User.objects.filter(name=name).first():
         return "Username exists."
-    return 'Pass'
+    return True

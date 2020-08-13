@@ -2,8 +2,8 @@ import json
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
-import tools
-import api
+from . import tools
+from . import api
 
 def add_data(request):
     tools.add_data()
