@@ -148,3 +148,15 @@ def decrypt(value):
     src = signing.loads(value)
     print(src)
     return src
+
+def get_uid(src):
+    try:
+        # print(src)
+        uid = decrypt(src)
+        # print(uid)
+        if User.objects.filter(uid=uid).first() is not None:
+            return uid
+        else:
+            return None
+    except:
+        return None

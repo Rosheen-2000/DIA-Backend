@@ -59,14 +59,12 @@ class Doc(models.Model):
     did = models.AutoField(primary_key=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, default="")
     create_time = models.DateTimeField(auto_now=True)
-    content = models.OneToOneField(DocContent, on_delete=models.CASCADE,
-                                   related_name='doc_header', default="")
+    content = models.OneToOneField(DocContent, on_delete=models.CASCADE, related_name='doc_header', default="")
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, related_name='docs')
     isdeleted = models.IntegerField(default=0)
     modify_time = models.DateTimeField(auto_now_add=True)
     modify_num = models.IntegerField(default=0)
-    modify_people = models.ForeignKey(User, on_delete=models.CASCADE, null=True,
-                                      related_name='docs')
+    modify_people = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='docs')
 
     def __str__(self):
         return self.content.title
