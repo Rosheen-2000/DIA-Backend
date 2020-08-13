@@ -1,5 +1,6 @@
 import json
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.shortcuts import render
 
 from . import tools
@@ -24,3 +25,16 @@ def register(request):
 def check(request):
     name = request.POST.get('uname')
     return JsonResponse({'res': api.check(name)})
+
+def new_doc(request):
+    uid = request.POST.get('uid')
+    title = request.POST.get('title')
+    content = request.POST.get('content')
+    msg, did = api.new_doc(uid, title, content)
+    return JsonResponse({'msg': msg, 'docid': did})
+
+def modify_doc_content(request):
+    uid = request.POST.get('uid')
+    did = request.POST.get('did')
+    content = request.POST.get('content')
+    return JsonResponse({'msg': api.modify_doc_content(uid, did, content)})
