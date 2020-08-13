@@ -105,7 +105,6 @@ class TeamMember(models.Model):
     class Meta:
         db_table = 'TeamMember'
 
-
 class DocPower(models.Model):
     member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='DocPower')
     doc = models.ForeignKey(Doc, on_delete=models.CASCADE, related_name='DocPower')
