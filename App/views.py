@@ -92,7 +92,7 @@ def getdoccontent(request):
     uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if uid is None:
         return JsonResponse({'msg':'No permission'}, status = 401)
-    docid = request.GET.get('_docid')
+    docid = request.POST.get('_docid')
     # print(type(docid))
     ret = api.getDocContent(uid, docid)
     return JsonResponse(ret)
@@ -103,3 +103,19 @@ def my_test(request):
     uid = tools.get_uid(uid)
     print(uid)
     return HttpResponse('测试成功')
+
+
+def doc_own_file(request):
+    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if uid is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    ret = api.get_own_file(uid)
+    return JsonResponse(ret, safe=False)
+
+
+def doc_trash_file(request):
+    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if uid is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    ret = api.get_trash_file(uid)
+    return JsonResponse(ret, safe=False)

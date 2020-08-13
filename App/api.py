@@ -123,3 +123,25 @@ def getDocContent(uid, docid):
     content = doc.content.content
     updateBrowse(uid, docid)
     return {'Title':title, 'Content':content}
+
+def get_own_file(uid):
+    user = User.objects.filter(uid=uid).first()
+    # print(user)
+    res = []
+    if user:
+        docs = Doc.objects.filter(creator=user)
+        for doc in docs:
+            res.append({'name':doc.content.title, 'id': str(doc.did)})
+        # return res
+    return res
+
+def get_trash_file(uid):
+    user = User.objects.filter(uid=uid).first()
+    # print(user)
+    res = []
+    if user:
+        docs = Doc.objects.filter(creator=user, isdeleted=1)
+        for doc in docs:
+            res.append({'name':doc.content.title, 'id': str(doc.did)})
+        # return res
+    return res
