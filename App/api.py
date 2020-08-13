@@ -23,7 +23,7 @@ def check(name):
     return 'true'
 
 def remove_doc(uid, did):
-    doc = Doc.objects.filter(did=did, creator__uid=uid).first()
+    doc = Doc.objects.filter(did=did).first()
     if doc is not None:
         doc.isdeleted = 1
         doc.save()
@@ -32,7 +32,7 @@ def remove_doc(uid, did):
         return 'Remove doc field'
 
 def recover_doc(uid, did):
-    doc = Doc.objects.filter(did=did, creator__uid=uid).first()
+    doc = Doc.objects.filter(did=did).first()
     if doc is not None:
         doc.isdeleted = 0
         doc.save()
@@ -42,7 +42,7 @@ def recover_doc(uid, did):
 
 def delete_doc(uid, did):
     print(uid, did)
-    doc = Doc.objects.filter(did=did, creator__uid=uid).first()
+    doc = Doc.objects.filter(did=did).first()
     if doc is not None:
         doc.content.delete()
         doc.delete()
@@ -50,4 +50,10 @@ def delete_doc(uid, did):
     else:
         return 'Delete doc field'
 
+# def get_user_binfo(uid):
+#     user = User.objects.filter(uid=uid).first()
+#     if user is None:
+#         return 'Can not find by this id', '', ''
+#     else:
+#         return 'true', user.name, user.profile
 
