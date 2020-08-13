@@ -1,5 +1,7 @@
+import datetime
+
 from .models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team, TeamMember, Favorite, Comment, Message
-from .tools import encrypt, decrypt
+from .tools import encrypt, decrypt, updateBrowse
 from django.utils import timezone
 
 def login(name, password):
@@ -96,3 +98,28 @@ def get_user_binfo(uid):
     else:
         return 'true', user.name, user.profile
 
+
+def modifyDocTitle(uid, docid, title):
+    doc = Doc.objects.filter(did = docid).first()
+    if doc is None:
+        return 'Doc inexisted'
+    doc.content.title = title
+    doc.content.save()
+    doc.create_time = datetime.datetime.now()   # actually it's modify_time
+    doc.modify_num += 1
+    # doc.modify_people
+    # Browse
+    doc.save()
+    return 'true'
+
+def getDocContent(uid, docid):
+    # print(docid)
+    doc = Doc.objects.filter(did = docid).first()
+    # print(type(doc.did))
+    if doc is None:
+        return {'Title': '', 'Content': ''}
+        # return 'Doc inexisted'
+    title = doc.content.title
+    content = doc.content.content
+    updateBrowse(uid, docid)
+    return {'Title':title, 'Content':content}

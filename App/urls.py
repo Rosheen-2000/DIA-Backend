@@ -13,6 +13,8 @@ urlpatterns = [
     path('doc/deletedocconfirm/', views.deletedocconfirm, name='deletedocconfirm'),
     path('doc/newdoc/', views.new_doc, name='new_doc'),
     path('doc/modifydoccontent/', views.modify_doc_content, name='modify_doc_content'),
-    path('template/getall/', views.get_template, name='get_template')
+    path('template/getall/', views.get_template, name='get_template'),
+    path('doc/modifydoctitle/', views.modifydoctitle, name = 'modifydoctitle'),
+    path('doc/getdoccontent/', views.getdoccontent, name = 'getdoccontent'),
     # path('my_test/', views.my_test, name='my_test'),
 ]

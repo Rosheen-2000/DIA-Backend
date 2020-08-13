@@ -78,6 +78,25 @@ def get_template(request):
     return JsonResponse({'templates': api.get_all_templates()})
 
 
+
+def modifydoctitle(request):
+    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if uid is None:
+        return JsonResponse({'msg':'No permission'}, status = 401)
+    docid = request.POST.get('docid')
+    title = request.POST.get('title')
+    msg = api.modifyDocTitle(uid, docid, title)
+    return JsonResponse({'msg':msg})
+
+def getdoccontent(request):
+    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if uid is None:
+        return JsonResponse({'msg':'No permission'}, status = 401)
+    docid = request.GET.get('_docid')
+    # print(type(docid))
+    ret = api.getDocContent(uid, docid)
+    return JsonResponse(ret)
+
 def my_test(request):
     uid = request.GET.get('uid')
     print(uid)

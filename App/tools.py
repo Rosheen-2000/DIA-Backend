@@ -1,4 +1,5 @@
 """generate database test data"""
+import datetime
 import random
 import string
 from django.core import signing
@@ -160,3 +161,15 @@ def get_uid(src):
             return None
     except:
         return None
+
+def updateBrowse(uid, did):
+    broList = Browse.objects.filter(uid = uid, did = did)
+    if broList.exists():
+        bro = broList.first()
+        bro.create_time = datetime.datetime.now()
+        bro.save()
+    else:
+        user = User.objects.filter(uid=uid).first()
+        did = Doc.objects.filter(did=did).first()
+        bro = Browse(uid = user, did = did, create_time = datetime.datetime.now())
+        bro.save()
