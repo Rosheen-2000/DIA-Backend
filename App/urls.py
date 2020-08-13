@@ -11,5 +11,8 @@ urlpatterns = [
     path('doc/deletedoc/', views.deletedoc, name='deletedoc'),
     path('doc/recoverdoc/', views.recoverdoc, name='recoverdoc'),
     path('doc/deletedocconfirm/', views.deletedocconfirm, name='deletedocconfirm'),
+    path('doc/newdoc/', views.new_doc, name='new_doc'),
+    path('doc/modifydoccontent/', views.modify_doc_content, name='modify_doc_content'),
+    path('template/getall/', views.get_template, name='get_template')
     # path('my_test/', views.my_test, name='my_test'),
 ]

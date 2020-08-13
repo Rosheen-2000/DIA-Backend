@@ -57,6 +57,27 @@ def deletedocconfirm(request):
     return JsonResponse({'msg': msg})
 
 
+def new_doc(request):
+    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if not uid:
+        return JsonResponse({'msg': 'No permisson'}, status=401)
+    title = request.POST.get('title')
+    template_id = request.POST.get('template')
+    msg, did = api.new_doc(uid, title, template_id)
+    return JsonResponse({'msg': msg, 'docid': did})
+
+def modify_doc_content(request):
+    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if not uid:
+        return JsonResponse({'msg': 'No permisson'}, status=401)
+    did = request.POST.get('did')
+    content = request.POST.get('content')
+    return JsonResponse({'msg': api.modify_doc_content(uid, did, content)})
+
+def get_template(request):
+    return JsonResponse({'templates': api.get_all_templates()})
+
+
 def my_test(request):
     uid = request.GET.get('uid')
     print(uid)
