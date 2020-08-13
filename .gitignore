@@ -25,3 +25,4 @@ Thumbs.db
 *.pyc
 
 App/migrations/*
+!App/migrations/__init__.py
