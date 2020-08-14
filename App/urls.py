@@ -14,6 +14,8 @@ urlpatterns = [
     path('userinfo/changepwd/', views.modify_pwd, name='changepwd'),
     path('userinfo/changemail/', views.changemail, name = 'changemail'),
     path('userinfo/changephoneno/', views.changephoneno, name = 'changephoneno'),
+    path('userinfo/basic/', views.userinfo_basic, name='userinfo_basic'),
+    path('userinfo/all/', views.userinfo_all, name='userinfo_all'),
 
     # doc
     path('doc/deletedoc/', views.deletedoc, name='deletedoc'),

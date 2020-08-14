@@ -107,14 +107,6 @@ def get_all_templates():
     return templates
 
 
-def get_user_binfo(uid):
-    user = User.objects.filter(uid=uid).first()
-    if user is None:
-        return 'Can not find by this id', '', ''
-    else:
-        return 'true', user.name, user.profile
-
-
 def modifyDocTitle(uid, docid, title):
     doc = Doc.objects.filter(did = docid).first()
     if doc is None:
@@ -177,3 +169,19 @@ def changePhoneNo(uid, newphoneno):
     user.tel = newphoneno
     user.save()
     return 'true'
+
+def get_user_binfo(uid):
+    user = User.objects.filter(uid=uid).first()
+    if user is None:
+        return 'Can not find by this id', '', ''
+    else:
+        return 'true', user.name, str(user.profile)
+
+def get_user_ainfo(uid):
+    user = User.objects.filter(uid=uid).first()
+    if user is None:
+        return 'Can not find by this id', '', '', '', ''
+    else:
+        mail = user.mail if user.mail is not None else ''
+        tel = user.tel if user.tel is not None else ''
+        return 'true', user.name, str(user.profile), mail, tel

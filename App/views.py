@@ -53,6 +53,25 @@ def changephoneno(request):
     msg = api.changePhoneNo(uid, newphoneno)
     return JsonResponse({'msg':msg})
 
+def userinfo_basic(request):
+    uid = request.POST.get('uid')
+    if uid == '':
+        uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
+        if uid is None:
+            return JsonResponse({'msg': 'No permission'}, status=401)
+    msg, uname, prof = api.get_user_binfo(uid)
+    return JsonResponse({'msg': msg, 'uname':uname, 'avatar':prof})
+
+def userinfo_all(request):
+    uid = request.POST.get('uid')
+    if uid == '':
+        uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
+        if uid is None:
+            return JsonResponse({'msg': 'No permission'}, status=401)
+    msg, uname, prof, mail, tel = api.get_user_ainfo(uid)
+    return JsonResponse({'msg': msg, 'uname':uname, 'avatar':prof, 'mail':mail, 'phoneno':tel})
+
+
 # doc
 def deletedoc(request):
     uid = request.META.get('HTTP_TOKEN')
