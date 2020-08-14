@@ -119,3 +119,19 @@ def doc_trash_file(request):
         return JsonResponse({'msg': 'No permission'}, status=401)
     ret = api.get_trash_file(uid)
     return JsonResponse(ret, safe=False)
+
+def changemail(request):
+    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if uid is None:
+        return JsonResponse({'msg':'No permission'}, status = 401)
+    newmail = request.POST.get('newmail')
+    msg = api.changeMail(uid, newmail)
+    return JsonResponse({'msg':msg})
+
+def changephoneno(request):
+    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if uid is None:
+        return JsonResponse({'msg':'No permission'}, status = 401)
+    newphoneno = request.POST.get('newphoneno')
+    msg = api.changePhoneNo(uid, newphoneno)
+    return JsonResponse({'msg':msg})

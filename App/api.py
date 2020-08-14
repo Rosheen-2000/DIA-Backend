@@ -145,3 +145,19 @@ def get_trash_file(uid):
             res.append({'name':doc.content.title, 'id': str(doc.did)})
         # return res
     return res
+
+def changeMail(uid, newmail):
+    user = User.objects.filter(uid = uid).first()
+    if user is None:
+        return 'User inexisted'
+    user.mail = newmail
+    user.save()
+    return 'true'
+
+def changePhoneNo(uid, newphoneno):
+    user = User.objects.filter(uid = uid).first()
+    if user is None:
+        return 'User inexisted'
+    user.tel = newphoneno
+    user.save()
+    return 'true'

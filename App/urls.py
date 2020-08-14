@@ -18,5 +18,7 @@ urlpatterns = [
     path('doc/getdoccontent/', views.getdoccontent, name = 'getdoccontent'),
     path('doc/own/file/', views.doc_own_file, name='doc_own_file'),
     path('doc/trash/file/', views.doc_trash_file, name='doc_trash_file'),
+    path('userinfo/changemail/', views.changemail, name = 'changemail'),
+    path('userinfo/changephoneno/', views.changephoneno, name = 'changephoneno'),
     # path('my_test/', views.my_test, name='my_test'),
 ]
