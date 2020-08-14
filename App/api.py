@@ -1,8 +1,10 @@
 import datetime
 
+from django.utils import timezone
+
 from .models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team, TeamMember, Favorite, Comment, Message
 from .tools import encrypt, decrypt, updateBrowse
-from django.utils import timezone
+
 
 def login(name, password):
     user = User.objects.filter(name=name).first()
@@ -24,6 +26,20 @@ def check(name):
     if User.objects.filter(name=name).first():
         return "Username exists."
     return 'true'
+
+def modify_uname(uid, new_name):
+    u = User.objects.filter(uid=uid).first()
+    u.name = new_name
+    u.save()
+    return 'true'
+
+def modify_pwd(uid, currentpwd, newpwd):
+    user = User.objects.filter(uid=uid).first()
+    if user.password == currentpwd:
+        user.password = newpwd
+        user.save()
+        return 'true'
+    return 'wrong password'
 
 def remove_doc(uid, did):
     doc = Doc.objects.filter(did=did).first()
@@ -114,7 +130,7 @@ def modifyDocTitle(uid, docid, title):
 
 def getDocContent(uid, docid):
     # print(docid)
-    doc = Doc.objects.filter(did = docid).first()
+    doc = Doc.objects.filter(did=docid).first()
     # print(type(doc.did))
     if doc is None:
         return {'Title': '', 'Content': ''}
