@@ -2,72 +2,71 @@ import datetime
 
 from django.utils import timezone
 
-from .models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team, TeamMember, Favorite, Comment, Message
-from .tools import encrypt, decrypt, updateBrowse
+from ..models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team, TeamMember, Favorite, Comment, Message, Folder, LikeRecord, DocStatus
+from ..tools import encrypt, decrypt, updateBrowse
 
 
-def login(name, password):
-    user = User.objects.filter(name=name).first()
-    if user:
-        if user.password == password:
-            value = encrypt(user.uid)
-            return 'true', value
-        return "Wrong Password", ''
+def remove_doc(user, did):
+    doc = Doc.objects.filter(did=did, isdeleted=0).first()
+    if doc is None:
+        return 'Worry did'
 
-    return "Username does not exist.", ''
-
-def register(name, password):
-    if check(name) != 'true':
-        return "Username exists.", ''
-    uid = User.objects.create(name=name, password=password).uid
-    return True, encrypt(uid)
-
-def check(name):
-    if User.objects.filter(name=name).first():
-        return "Username exists."
-    return 'true'
-
-def modify_uname(uid, new_name):
-    u = User.objects.filter(uid=uid).first()
-    u.name = new_name
-    u.save()
-    return 'true'
-
-def modify_pwd(uid, currentpwd, newpwd):
-    user = User.objects.filter(uid=uid).first()
-    if user.password == currentpwd:
-        user.password = newpwd
-        user.save()
-        return 'true'
-    return 'wrong password'
-
-def remove_doc(uid, did):
-    doc = Doc.objects.filter(did=did).first()
-    if doc is not None:
+    docp = DocPower.objects.filter(member_id=user.id, doc__did=did).first()
+    # print(docp.id)
+    # print(uid)
+    # print(doc.creator.uid)
+    if user.id == doc.creator.uid:
         doc.isdeleted = 1
         doc.save()
         return 'true'
     else:
-        return 'Remove doc failed'
+        if docp is None or docp.role < 3:
+            return 'You have no permission'
+        else:
+            doc.isdeleted = 1
+            doc.save()
+            return 'true'
 
-def recover_doc(uid, did):
-    doc = Doc.objects.filter(did=did).first()
-    if doc is not None:
+def recover_doc(user, did):
+    doc = Doc.objects.filter(did=did, isdeleted=1).first()
+    if doc is None:
+        return 'Worry did'
+
+    docp = DocPower.objects.filter(member_id=user.id, doc__did=did).first()
+    # print(docp.id)
+    # print(uid)
+    # print(doc.creator.uid)
+    if user.id == doc.creator.uid:
         doc.isdeleted = 0
         doc.save()
         return 'true'
     else:
-        return 'Recover doc failed'
+        if docp is None or docp.role < 3:
+            return 'You have no permission'
+        else:
+            doc.isdeleted = 0
+            doc.save()
+            return 'true'
 
-def delete_doc(uid, did):
-    print(uid, did)
-    doc = Doc.objects.filter(did=did).first()
-    if doc is not None:
+def delete_doc(user, did):
+    doc = Doc.objects.filter(did=did, isdeleted=1).first()
+    if doc is None:
+        return 'Worry did'
+
+    docp = DocPower.objects.filter(member_id=user.id, doc__did=did).first()
+    # print(docp.id)
+    # print(uid)
+    # print(doc.creator.uid)
+    if user.id == doc.creator.uid:
         doc.content.delete()
-        doc.delete()
+        # doc.save()
         return 'true'
     else:
-        return 'Delete doc failed'
+        if docp is None or docp.role < 3:
+            return 'You have no permission'
+        else:
+            doc.content.delete()
+            return 'true'
 
 def new_doc(uid, title, template_id):
     template = DocTemplate.objects.filter(tid=template_id).first()
@@ -137,7 +136,7 @@ def get_own_file(uid):
     # print(user)
     res = []
     if user:
-        docs = Doc.objects.filter(creator=user)
+        docs = Doc.objects.filter(creator=user, isdeleted=0)
         for doc in docs:
             res.append({'name':doc.content.title, 'id': str(doc.did)})
         # return res
@@ -153,35 +152,3 @@ def get_trash_file(uid):
             res.append({'name':doc.content.title, 'id': str(doc.did)})
         # return res
     return res
-
-def changeMail(uid, newmail):
-    user = User.objects.filter(uid = uid).first()
-    if user is None:
-        return 'User inexisted'
-    user.mail = newmail
-    user.save()
-    return 'true'
-
-def changePhoneNo(uid, newphoneno):
-    user = User.objects.filter(uid = uid).first()
-    if user is None:
-        return 'User inexisted'
-    user.tel = newphoneno
-    user.save()
-    return 'true'
-
-def get_user_binfo(uid):
-    user = User.objects.filter(uid=uid).first()
-    if user is None:
-        return 'Can not find by this id', '', ''
-    else:
-        return 'true', user.name, str(user.profile)
-
-def get_user_ainfo(uid):
-    user = User.objects.filter(uid=uid).first()
-    if user is None:
-        return 'Can not find by this id', '', '', '', ''
-    else:
-        mail = user.mail if user.mail is not None else ''
-        tel = user.tel if user.tel is not None else ''
-        return 'true', user.name, str(user.profile), mail, tel

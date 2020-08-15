@@ -5,7 +5,7 @@ import string
 from django.core import signing
 
 from .models import User, DocContent, Doc, DocTemplate, Browse, Favorite, Team
-from .models import TeamMember, DocPower, Comment, Message
+from .models import TeamMember, DocPower, Comment, Message, Folder, LikeRecord, DocStatus
 
 
 # random.seed(1000)
@@ -26,6 +26,9 @@ def add_data():
     add_doc_power()
     add_comment()
     add_message()
+    add_folder()
+    add_doc_status() #待补充
+    add_like_record()
 
 
 def add_user():
@@ -57,7 +60,7 @@ def add_doc_template():
     for _ in range(10):
         dcc = DocContent(title=rand_str(10), content=rand_str(100))
         dcc.save()
-        dct = DocTemplate(content=dcc, name=rand_str(10))
+        dct = DocTemplate(content=dcc)
         docts.append(dct)
         # doccs.append(dcc)
 
@@ -113,7 +116,9 @@ def add_team_member():
 def add_doc_power():
     doc_powers = []
     for doc in Doc.objects.all():
-        doc_powers.append(DocPower(member=doc.creator, doc=doc, role=5))
+        doc_powers.append(DocPower(member=doc.creator, doc=doc, role=3))
+    for i in range(20):
+        doc_powers.append(DocPower(member=User.objects.order_by('?')[0], doc=Doc.objects.order_by('?')[0], role=random.randint(0, 3)))
     DocPower.objects.bulk_create(doc_powers)
     print('DocPowers add finished')
 
@@ -132,9 +137,32 @@ def add_message():
     Message.objects.bulk_create(messages)
     print('Messages add finished')
 
+def add_folder():
+    folders = []
+    for i in range(10):
+        user = User.objects.order_by('?')[0]
+        father = Folder.objects.order_by('?').first()
+        folders.append(Folder(name=rand_str(10), father=father, creator=user))
+    Folder.objects.bulk_create(folders)
+    print('Folder add finished')
+
+def add_doc_status():
+    pass
+
+def add_like_record():
+    likes = []
+    for i in range(20):
+        user = User.objects.order_by('?')[0]
+        comment = Comment.objects.order_by('?')[0]
+        likes.append(LikeRecord(user=user, comment=comment))
+    LikeRecord.objects.bulk_create(likes)
+    print('LikeRecord add finished')
+
 
 def my_test():
-    print(User.objects.order_by('?')[:2].first())
+    folder = Folder.objects.first()
+    folder.name = '123666'
+    folder.save()
 
 def encrypt(src):
     """encoding"""
@@ -155,8 +183,9 @@ def get_uid(src):
         # print(src)
         uid = decrypt(src)
         # print(uid)
-        if User.objects.filter(uid=uid).first() is not None:
-            return uid
+        user = User.objects.filter(id=uid).first()
+        if user is not None:
+            return user
         else:
             return None
     except:
