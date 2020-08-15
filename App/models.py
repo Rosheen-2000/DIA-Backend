@@ -1,7 +1,7 @@
 from django.db import models
 
 def user_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    # file will be uploaded to MEDIA_ROOT/avatar/user_<id>/<filename>
     return 'avatar/user_{0}/{1}'.format(instance.id, filename)
 
 class User(models.Model):
@@ -61,7 +61,7 @@ class DocContent(models.Model):
 
 
 def doc_template_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    # file will be uploaded to MEDIA_ROOT/template_pic/tem_<id>/<filename>
     return 'template_pic/tem_{0}/{1}'.format(instance.id, filename)
 
 class DocTemplate(models.Model):

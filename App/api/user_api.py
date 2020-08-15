@@ -1,4 +1,7 @@
 import datetime
+import time
+import base64
+import tempfile
 
 from django.utils import timezone
 
@@ -34,14 +37,11 @@ def get_user_binfo(uid):
     else:
         return 'true', user.name, str(user.profile)
 
-def get_user_ainfo(uid):
-    user = User.objects.filter(id=uid).first()
-    if user is None:
-        return 'Can not find by this id', '', '', '', ''
-    else:
-        mail = user.mail if user.mail is not None else ''
-        tel = user.tel if user.tel is not None else ''
-        return 'true', user.name, str(user.profile), mail, tel
+def get_user_ainfo(user):
+    avatar = user.avatar.url
+    mail = user.mail if user.mail is not None else ''
+    tel = user.tel if user.tel is not None else ''
+    return 'true', user.name, avatar, mail, tel
 
 def modify_uname(user, new_name):
     # u = User.objects.filter(id=uid).first()
@@ -73,4 +73,12 @@ def changePhoneNo(uid, newphoneno):
         return 'User inexisted'
     user.tel = newphoneno
     user.save()
+    return 'true'
+
+def change_newavatar(user, new_avatar):
+    new_avatar = base64.b64decode(bytes(new_avatar, encoding='utf-8'))
+    temp = tempfile.TemporaryFile()
+    temp.write(new_avatar)
+    user.avatar.save(time.strftime("%Y-%m-%d_%H%M%S", time.localtime())+'.jpg', temp)
+    temp.close()
     return 'true'

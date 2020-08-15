@@ -117,8 +117,9 @@ def add_doc_power():
     doc_powers = []
     for doc in Doc.objects.all():
         doc_powers.append(DocPower(member=doc.creator, doc=doc, role=3))
-    for i in range(20):
-        doc_powers.append(DocPower(member=User.objects.order_by('?')[0], doc=Doc.objects.order_by('?')[0], role=random.randint(0, 3)))
+    for _ in range(20):
+        doc_powers.append(DocPower(member=User.objects.order_by('?')[0],
+                                   doc=Doc.objects.order_by('?')[0], role=random.randint(0, 3)))
     DocPower.objects.bulk_create(doc_powers)
     print('DocPowers add finished')
 
@@ -139,7 +140,7 @@ def add_message():
 
 def add_folder():
     folders = []
-    for i in range(10):
+    for _ in range(10):
         user = User.objects.order_by('?')[0]
         father = Folder.objects.order_by('?').first()
         folders.append(Folder(name=rand_str(10), father=father, creator=user))
@@ -151,13 +152,12 @@ def add_doc_status():
 
 def add_like_record():
     likes = []
-    for i in range(20):
+    for _ in range(20):
         user = User.objects.order_by('?')[0]
         comment = Comment.objects.order_by('?')[0]
         likes.append(LikeRecord(user=user, comment=comment))
     LikeRecord.objects.bulk_create(likes)
     print('LikeRecord add finished')
-
 
 def my_test():
     folder = Folder.objects.first()
@@ -188,11 +188,11 @@ def get_uid(src):
             return user
         else:
             return None
-    except:
+    except signing.BadSignature:
         return None
 
 def updateBrowse(uid, did):
-    broList = Browse.objects.filter(uid = uid, did = did)
+    broList = Browse.objects.filter(uid=uid, did=did)
     if broList.exists():
         bro = broList.first()
         bro.create_time = datetime.datetime.now()

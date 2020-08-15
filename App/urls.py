@@ -16,6 +16,7 @@ urlpatterns = [
     path('userinfo/changephoneno/', views.changephoneno, name = 'changephoneno'),
     path('userinfo/basic/', views.userinfo_basic, name='userinfo_basic'),
     path('userinfo/all/', views.userinfo_all, name='userinfo_all'),
+    path('userinfo/changeavatar/', views.change_avatar, name='change_avatar'),
 
     # doc
     path('doc/deletedoc/', views.deletedoc, name='deletedoc'),

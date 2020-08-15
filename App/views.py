@@ -35,26 +35,25 @@ def userinfo_basic(request):
 
 def userinfo_all(request):
     uid = request.POST.get('uid')
-    if uid == '':
-        uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
-        if uid is None:
-            return JsonResponse({'msg': 'No permission'}, status=401)
-        else:
-            uid = uid.id
-    msg, uname, prof, mail, tel = user_api.get_user_ainfo(uid)
-    return JsonResponse({'msg': msg, 'uname':uname, 'avatar':prof, 'mail':mail, 'phoneno':tel})
+    if not uid:
+        user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+        if user is None:
+            return JsonResponse({'msg':'No permission'}, status=401)
+        msg, uname, avatar, mail, tel = user_api.get_user_ainfo(user)
+        return JsonResponse({'msg': msg, 'uname':uname, 'avatar':avatar, 'mail':mail, 'phoneno':tel})
+    return 'uid not null'
 
 def modify_uname(request):
     uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if uid is None:
-        return JsonResponse({'msg':'No permission'}, status = 401)
+        return JsonResponse({'msg':'No permission'}, status=401)
     new_name = request.POST.get('newname')
     return JsonResponse({'msg': user_api.modify_uname(uid, new_name)})
 
 def modify_pwd(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
-        return JsonResponse({'msg':'No permission'}, status = 401)
+        return JsonResponse({'msg':'No permission'}, status=401)
     currentpwd = request.POST.get('currentpwd')
     newpwd = request.POST.get('newpwd')
     return JsonResponse({'msg': user_api.modify_pwd(user, currentpwd, newpwd)})
@@ -62,7 +61,7 @@ def modify_pwd(request):
 def changemail(request):
     uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if uid is None:
-        return JsonResponse({'msg':'No permission'}, status = 401)
+        return JsonResponse({'msg':'No permission'}, status=401)
     newmail = request.POST.get('newmail')
     msg = user_api.changeMail(uid, newmail)
     return JsonResponse({'msg':msg})
@@ -70,9 +69,17 @@ def changemail(request):
 def changephoneno(request):
     uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if uid is None:
-        return JsonResponse({'msg':'No permission'}, status = 401)
+        return JsonResponse({'msg':'No permission'}, status=401)
     newphoneno = request.POST.get('newphoneno')
     msg = user_api.changePhoneNo(uid, newphoneno)
+    return JsonResponse({'msg':msg})
+
+def change_avatar(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    new_avatar = request.POST.get('newavatar')
+    msg = user_api.change_newavatar(user, new_avatar)
     return JsonResponse({'msg':msg})
 
 
@@ -165,7 +172,6 @@ def doc_trash_file(request):
 def add_data(request):
     tools.add_data()
     return HttpResponse('添加成功')
-
 
 def my_test(request):
     tools.my_test()
