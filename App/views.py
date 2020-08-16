@@ -187,6 +187,38 @@ def doc_used_file(request):
     files = doc_api.getBrowsedFile(user)
     return JsonResponse({'files': files})
 
+def favordoc(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    did = request.POST.get('did')
+    msg = doc_api.favordoc(user, did)
+    return JsonResponse({'msg': msg})
+
+def unfavordoc(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    did = request.POST.get('did')
+    msg = doc_api.unfavordoc(user, did)
+    return JsonResponse({'msg': msg})
+
+def sharetoteam(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    did = request.POST.get('docid')
+    teamid = request.POST.get('teamid')
+    msg = doc_api.share_to_team(user, did, teamid)
+    return JsonResponse({'msg': msg})
+
+def get_power(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    docid = request.GET.get('docid')
+    userPower, shareProperty = doc_api.get_power(user, docid)
+    return JsonResponse({'userPower':userPower, 'shareProperty':shareProperty})
 
 #etc
 def add_data(request):
@@ -197,3 +229,4 @@ def add_data(request):
 def my_test(request):
     tools.my_test()
     return HttpResponse('测试成功')
+

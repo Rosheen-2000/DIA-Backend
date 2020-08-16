@@ -31,6 +31,10 @@ urlpatterns = [
     path('doc/trash/file/', views.doc_trash_file, name='doc_trash_file'),
     path('doc/favorites/file/', views.doc_favorites_file, name = 'doc_favorites_file'),
     path('doc/used/file/', views.doc_used_file, name = 'doc_used_file'),
+    path('doc/favordoc/', views.favordoc, name='favordoc'),
+    path('doc/unfavordoc/', views.unfavordoc, name='unfavordoc'),
+    path('doc/sharetoteam/', views.sharetoteam, name='sharetoteam'),
+    path('doc/get-power/', views.get_power, name='get_power'),
 
     # template
     path('template/getall/', views.get_template, name='get_template'),

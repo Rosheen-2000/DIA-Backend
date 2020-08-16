@@ -208,12 +208,59 @@ def favordoc(user, did):
     doc = Doc.objects.filter(id=did).first()
     if doc is None:
         return 'Wrong did'
-    fav = Favorite.objects.filter(uid=user, did=doc)
+    fav = Favorite.objects.filter(uid=user, did=doc).first()
     if fav:
-        return 'Document has been favorited'
+        return 'The document has been favorited'
     else:
         Favorite.objects.create(uid=user, did=doc)
         return 'true'
 
-# def unfavordoc(user, did):
-#     doc = Doc.objects
+def unfavordoc(user, did):
+    doc = Doc.objects.filter(id=did).first()
+    if doc is None:
+        return 'Wrong did'
+    fav = Favorite.objects.filter(uid=user, did=doc).first()
+    if not fav:
+        return 'The document has not been favorited'
+    else:
+        fav.delete()
+        return 'true'
+
+def share_to_team(user, did, tid):
+    doc = Doc.objects.filter(id=did).first()
+    team = Team.objects.filter(id=tid).first()
+    if not doc:
+        return 'The doc does not exist'
+    if not team:
+        return 'The team does not exist'
+    team_member = TeamMember.objects.filter(member=user, team=team).first()
+    role = 0 if team_member is None else team_member.role
+    if role < 1:
+        return 'You have no permission to share the doc'
+    if doc.team is not None:
+        return 'You can not share a team-doc'
+    if doc.creator != user:
+        return 'This doc is not yours'
+
+    scontent = doc.content
+    content = DocContent.objects.create(title=scontent.title, content=scontent.content)
+    doc = Doc.objects.create(creator=user, content=content, team=team)
+    Browse.objects.create(uid=user, did=doc)
+
+    for member in TeamMember.objects.filter(team=team, role=1):
+        # 普通成员默认可读权限，可评论
+        DocPower.objects.create(doc=doc, member=member.member, role=1, is_commented=1)
+    DocPower.objects.create(doc=doc, member=team.creator, role=4)  # 队长权限为4
+    if team.creator != user:
+        DocPower.objects.create(doc=doc, member=user, role=4)  # 创建者权限为4
+    # 管理员未定
+    return 'true'
+
+def get_power(user, docid):
+    doc = Doc.objects.filter(id=docid).first()
+    if doc:
+        power = DocPower.objects.filter(doc=doc, member=user).first()
+        power = power.role if power else 0
+        return power, doc.type
+    return 'doc does not exists.', ''
+
