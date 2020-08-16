@@ -35,9 +35,16 @@ urlpatterns = [
     path('doc/unfavordoc/', views.unfavordoc, name='unfavordoc'),
     path('doc/sharetoteam/', views.sharetoteam, name='sharetoteam'),
     path('doc/get-power/', views.get_power, name='get_power'),
+    path('doc/get-corporation/', views.get_corporation, name = 'get_corporation'),
+    path('doc/set-share-option/', views.set_share_option, name = 'set_share_option'),
+    path('doc/set-power/', views.set_power, name = 'set_power'),
 
     # template
     path('template/getall/', views.get_template, name='get_template'),
+
+    # comment
+    path('comment/new/', views.new_comment, name='new_comment'),
+    path('comment/get/', views.get_comment, name='get_comment'),
 
     # etc
     path('add_data/', views.add_data, name='add_data'),

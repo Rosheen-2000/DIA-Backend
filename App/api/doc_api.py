@@ -101,9 +101,9 @@ def new_doc(creator, title, template_id, folder_id, team_id):
         for member in TeamMember.objects.filter(team=team, role=1):
             # 普通成员默认可读权限，可评论
             DocPower.objects.create(doc=doc, member=member.member, role=1, is_commented=1)
-        DocPower.objects.create(doc=doc, member=team.creator, role=4) # 队长权限为4
+        DocPower.objects.create(doc=doc, member=team.creator, role=4, is_commented=1) # 队长权限为4
         if team.creator != creator:
-            DocPower.objects.create(doc=doc, member=creator, role=4) # 创建者权限为4
+            DocPower.objects.create(doc=doc, member=creator, role=4, is_commented=1) # 创建者权限为4
         #管理员未定
     return 'true', str(doc.id)
 
@@ -250,9 +250,9 @@ def share_to_team(user, did, tid):
     for member in TeamMember.objects.filter(team=team, role=1):
         # 普通成员默认可读权限，可评论
         DocPower.objects.create(doc=doc, member=member.member, role=1, is_commented=1)
-    DocPower.objects.create(doc=doc, member=team.creator, role=4)  # 队长权限为4
+    DocPower.objects.create(doc=doc, member=team.creator, role=4, is_commented=1)  # 队长权限为4
     if team.creator != user:
-        DocPower.objects.create(doc=doc, member=user, role=4)  # 创建者权限为4
+        DocPower.objects.create(doc=doc, member=user, role=4, is_commented=1)  # 创建者权限为4
     # 管理员未定
     return 'true'
 
@@ -263,4 +263,49 @@ def get_power(user, docid):
         power = power.role if power else 0
         return power, doc.type
     return 'doc does not exists.', ''
+
+def getCorporation(docid):
+    dpList = DocPower.objects.filter(doc = docid)
+    userList = [[],[],[],[],[]]
+    for dp in dpList:
+        name = dp.member.name
+        avatar = dp.member.avatar.url if dp.member.avatar else ''
+        power = dp.role
+        userList[power].append({'username': name, 'avatar': avatar})
+    return {'level1': userList[1], 'level2': userList[2], 'level3': userList[3], 'level4': userList[4]}
+
+def setShareOption(user, docid, shareOption):
+    if shareOption > 2 or shareOption < 0:
+        return 'Power invalid'
+    doc = Doc.objects.filter(id=docid).first()
+    if doc is None:
+        return 'Doc inexisted'
+    power = getPower(user, doc)
+    if power < 3:
+        return 'No permission'
+    doc.type = shareOption
+    doc.save()
+    return 'true'
+
+def setPower(user, tarName, docid, power):
+    if power < 0 or power > 3:
+        return 'Power invalid'
+    tar = User.objects.filter(name=tarName).first()
+    if tar is None:
+        return 'Target inexisted'
+    doc = Doc.objects.filter(id=docid).first()
+    if doc is None:
+        return 'Doc inexisted'
+    setterPower = getPower(user, doc)
+    if setterPower < 3 or (setterPower == 3 and power == 3):
+        return 'No permission'
+    is_commented = (power >= 1)
+    dp = DocPower.objects.filter(member = tar, doc = doc).first()
+    if dp is None:
+        dp = DocPower(member = tar, doc = doc, role = power, is_commented = is_commented)
+    else:
+        dp.role = power
+        dp.is_commented = is_commented
+    dp.save()
+    return 'true'
 

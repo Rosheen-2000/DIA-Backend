@@ -220,6 +220,58 @@ def get_power(request):
     userPower, shareProperty = doc_api.get_power(user, docid)
     return JsonResponse({'userPower':userPower, 'shareProperty':shareProperty})
 
+def get_corporation(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    docid = request.GET.get('docid')
+    ret = doc_api.getCorporation(docid)
+    return JsonResponse(ret)
+
+def set_share_option(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    docid = request.POST.get('docid')
+    try:
+        shareOption = int(request.POST.get('shareOption')) # try-catch
+        msg = doc_api.setShareOption(user, docid, shareOption)
+        return JsonResponse({'msg': msg})
+    except:
+        return JsonResponse({'msg': 'Wrong power'})
+
+def set_power(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    tarName = request.POST.get('username')
+    docid = request.POST.get('docid')
+    try:
+        power = int(request.POST.get('power')) # try-catch
+        msg = doc_api.setPower(user, tarName, docid, power)
+        return JsonResponse({'msg': msg})
+    except:
+        return JsonResponse({'msg': 'Wrong power'})
+
+
+# comment
+def new_comment(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    docid = request.POST.get('docid')
+    content = request.POST.get('content')
+    return JsonResponse({'msg':comment_api.new_comment(user, docid, content)})
+
+def get_comment(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    docid = request.GET.get('docid')
+    comments = comment_api.get_comment(docid)
+    return JsonResponse({'comments':comments})
+
+
 #etc
 def add_data(request):
     tools.add_data()
