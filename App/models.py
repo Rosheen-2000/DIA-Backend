@@ -19,21 +19,6 @@ class User(models.Model):
     class Meta:
         db_table = 'User'
 
-class Folder(models.Model):
-    # fid = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=200)
-    father = models.OneToOneField('self', on_delete=models.CASCADE, related_name='child', null=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='folder')
-    create_time = models.DateTimeField(auto_now_add=True)
-    modify_time = models.DateTimeField(auto_now_add=True)
-    isdeleted = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = 'Folder'
-
 class Team(models.Model):
     name = models.CharField(max_length=200, unique=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -46,6 +31,22 @@ class Team(models.Model):
     class Meta:
         db_table = 'Team'
 
+
+class Folder(models.Model):
+    # fid = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=200)
+    father = models.OneToOneField('self', on_delete=models.CASCADE, related_name='child', null=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='folder')
+    create_time = models.DateTimeField(auto_now_add=True)
+    modify_time = models.DateTimeField(auto_now_add=True)
+    isdeleted = models.IntegerField(default=0)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='folder', null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'Folder'
 
 
 class DocContent(models.Model):
