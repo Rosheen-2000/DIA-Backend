@@ -1,12 +1,12 @@
 import datetime
-import time
-import base64
-import tempfile
 
 from django.utils import timezone
 
 from ..models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team, TeamMember, Favorite, Comment, Message, Folder, LikeRecord, DocStatus
 from ..tools import encrypt, decrypt, updateBrowse
+import time
+import base64
+import tempfile
 
 
 def login(name, password):
@@ -23,24 +23,23 @@ def register(name, password):
     if check(name) != 'true':
         return "Username exists.", ''
     uid = User.objects.create(name=name, password=password).id
-    return True, encrypt(uid)
+    return 'true', encrypt(uid)
 
 def check(name):
     if User.objects.filter(name=name).first():
         return "Username exists."
     return 'true'
 
-def get_user_binfo(uid):
+def get_user_basicinfo(uid):
     user = User.objects.filter(id=uid).first()
     if user is None:
         return 'Can not find by this id', '', ''
-    else:
-        return 'true', user.name, str(user.profile)
+    return 'true', user.name, user.avatar.url if user.avatar else ''
 
-def get_user_ainfo(user):
-    avatar = user.avatar.url
-    mail = user.mail if user.mail is not None else ''
-    tel = user.tel if user.tel is not None else ''
+def get_user_allinfo(user):
+    avatar = user.avatar.url if user.avatar else ''
+    mail = user.mail if user.mail else ''
+    tel = user.tel if user.tel else ''
     return 'true', user.name, avatar, mail, tel
 
 def modify_uname(user, new_name):
@@ -59,16 +58,16 @@ def modify_pwd(user, currentpwd, newpwd):
         return 'true'
     return 'notmatch'
 
-def changeMail(uid, newmail):
-    user = User.objects.filter(uid = uid).first()
+def changeMail(user, newmail):
+    # user = User.objects.filter(id = uid).first()
     if user is None:
         return 'User inexisted'
     user.mail = newmail
     user.save()
     return 'true'
 
-def changePhoneNo(uid, newphoneno):
-    user = User.objects.filter(uid = uid).first()
+def changePhoneNo(user, newphoneno):
+    # user = User.objects.filter(id = uid).first()
     if user is None:
         return 'User inexisted'
     user.tel = newphoneno
@@ -82,3 +81,18 @@ def change_newavatar(user, new_avatar):
     user.avatar.save(time.strftime("%Y-%m-%d_%H%M%S", time.localtime())+'.jpg', temp)
     temp.close()
     return 'true'
+
+def getTeam(uid):
+    print(uid)
+    teamList = []
+    if not User.objects.filter(id=uid).exists():
+        return {'msg':'User inexisted','teamlist':teamList}
+    teamIdList = TeamMember.objects.filter(member_id = uid).values_list('team') # use teamList[i][0] to get No.i team.id
+    teamNum = len(teamIdList)
+    for i in range(teamNum):
+        name = Team.objects.filter(id = teamIdList[i][0]).first()
+        if name is None:
+            return {'msg':'Team inexisted','teamlist':teamList}
+        name = name.name
+        teamList.append({'name':name,'id':str(teamIdList[i][0])})
+    return {'msg':'true','teamlist':teamList}

@@ -23,25 +23,30 @@ def check(request):
     return JsonResponse({'res': user_api.check(name)})
 
 def userinfo_basic(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
     uid = request.POST.get('uid')
-    if uid == '':
+    uid = uid if uid else user.id
+    msg, uname, avatar = user_api.get_user_basicinfo(uid)
+    return JsonResponse({'msg': msg, 'uname':uname, 'avatar':avatar})
+
+def userinfo_all(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    msg, uname, avatar, mail, tel = user_api.get_user_allinfo(user)
+    return JsonResponse({'msg': msg, 'uname':uname, 'avatar':avatar, 'mail':mail, 'phoneno':tel})
+
+def getteam(request):
+    uid = request.GET.get('uid')
+    if uid=='':
         uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
         if uid is None:
             return JsonResponse({'msg': 'No permission'}, status=401)
-        else:
-            uid = uid.id
-    msg, uname, prof = user_api.get_user_binfo(uid)
-    return JsonResponse({'msg': msg, 'uname':uname, 'avatar':prof})
-
-def userinfo_all(request):
-    uid = request.POST.get('uid')
-    if not uid:
-        user = tools.get_uid(request.META.get('HTTP_TOKEN'))
-        if user is None:
-            return JsonResponse({'msg':'No permission'}, status=401)
-        msg, uname, avatar, mail, tel = user_api.get_user_ainfo(user)
-        return JsonResponse({'msg': msg, 'uname':uname, 'avatar':avatar, 'mail':mail, 'phoneno':tel})
-    return 'uid not null'
+        uid = uid.id
+    ret = user_api.getTeam(uid)
+    return JsonResponse(ret)
 
 def modify_uname(request):
     uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
@@ -59,19 +64,19 @@ def modify_pwd(request):
     return JsonResponse({'msg': user_api.modify_pwd(user, currentpwd, newpwd)})
 
 def changemail(request):
-    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
-    if uid is None:
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
     newmail = request.POST.get('newmail')
-    msg = user_api.changeMail(uid, newmail)
+    msg = user_api.changeMail(user, newmail)
     return JsonResponse({'msg':msg})
 
 def changephoneno(request):
-    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
-    if uid is None:
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
     newphoneno = request.POST.get('newphoneno')
-    msg = user_api.changePhoneNo(uid, newphoneno)
+    msg = user_api.changePhoneNo(user, newphoneno)
     return JsonResponse({'msg':msg})
 
 def change_avatar(request):
@@ -115,21 +120,23 @@ def deletedocconfirm(request):
     return JsonResponse({'msg': msg})
 
 def new_doc(request):
-    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
-    if not uid:
-        return JsonResponse({'msg': 'No permisson'}, status=401)
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
     title = request.POST.get('title')
     template_id = request.POST.get('template')
-    msg, did = doc_api.new_doc(uid, title, template_id)
+    folder_id = request.POST.get('folderId')
+    team_id = request.POST.get('spaceId')
+    msg, did = doc_api.new_doc(user, title, template_id, folder_id, team_id)
     return JsonResponse({'msg': msg, 'docid': did})
 
 def modify_doc_content(request):
-    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
-    if not uid:
-        return JsonResponse({'msg': 'No permisson'}, status=401)
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
     did = request.POST.get('did')
     content = request.POST.get('content')
-    return JsonResponse({'msg': doc_api.modify_doc_content(uid, did, content)})
+    return JsonResponse({'msg': doc_api.modify_doc_content(user, did, content)})
 
 def get_template(request):
     return JsonResponse({'templates': doc_api.get_all_templates()})
@@ -137,41 +144,55 @@ def get_template(request):
 def modifydoctitle(request):
     uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if uid is None:
-        return JsonResponse({'msg':'No permission'}, status = 401)
+        return JsonResponse({'msg':'No permission'}, status=401)
     docid = request.POST.get('docid')
     title = request.POST.get('title')
     msg = doc_api.modifyDocTitle(uid, docid, title)
     return JsonResponse({'msg':msg})
 
 def getdoccontent(request):
-    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
-    if uid is None:
-        return JsonResponse({'msg':'No permission'}, status = 401)
-    docid = request.GET.get('_docid')
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    docid = request.POST.get('_docid')
     # print(type(docid))
-    ret = doc_api.getDocContent(uid, docid)
+    ret = doc_api.getDocContent(user, docid)
     return JsonResponse(ret)
 
 def doc_own_file(request):
-    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
-    if uid is None:
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
         return JsonResponse({'msg': 'No permission'}, status=401)
-    ret = doc_api.get_own_file(uid)
-    return JsonResponse(ret, safe=False)
-
+    ret = doc_api.get_own_file(user)
+    return JsonResponse({'files': ret})
 
 def doc_trash_file(request):
-    uid = tools.get_uid(request.META.get('HTTP_TOKEN'))
-    if uid is None:
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
         return JsonResponse({'msg': 'No permission'}, status=401)
-    ret = doc_api.get_trash_file(uid)
-    return JsonResponse(ret, safe=False)
+    ret = doc_api.get_trash_file(user)
+    return JsonResponse({'files': ret})
+
+def doc_favorites_file(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    files = doc_api.getFavoriteFile(user)
+    return JsonResponse({'files': files})
+
+def doc_used_file(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    files = doc_api.getBrowsedFile(user)
+    return JsonResponse({'files': files})
 
 
 #etc
 def add_data(request):
     tools.add_data()
     return HttpResponse('添加成功')
+
 
 def my_test(request):
     tools.my_test()

@@ -116,10 +116,9 @@ def add_team_member():
 def add_doc_power():
     doc_powers = []
     for doc in Doc.objects.all():
-        doc_powers.append(DocPower(member=doc.creator, doc=doc, role=3))
-    for _ in range(20):
-        doc_powers.append(DocPower(member=User.objects.order_by('?')[0],
-                                   doc=Doc.objects.order_by('?')[0], role=random.randint(0, 3)))
+        doc_powers.append(DocPower(member=doc.creator, doc=doc, role=4))
+    for i in range(20):
+        doc_powers.append(DocPower(member=User.objects.order_by('?')[0], doc=Doc.objects.order_by('?')[0], role=random.randint(0, 3)))
     DocPower.objects.bulk_create(doc_powers)
     print('DocPowers add finished')
 
@@ -140,7 +139,7 @@ def add_message():
 
 def add_folder():
     folders = []
-    for _ in range(10):
+    for i in range(10):
         user = User.objects.order_by('?')[0]
         father = Folder.objects.order_by('?').first()
         folders.append(Folder(name=rand_str(10), father=father, creator=user))
@@ -152,12 +151,13 @@ def add_doc_status():
 
 def add_like_record():
     likes = []
-    for _ in range(20):
+    for i in range(20):
         user = User.objects.order_by('?')[0]
         comment = Comment.objects.order_by('?')[0]
         likes.append(LikeRecord(user=user, comment=comment))
     LikeRecord.objects.bulk_create(likes)
     print('LikeRecord add finished')
+
 
 def my_test():
     folder = Folder.objects.first()
@@ -180,25 +180,29 @@ def decrypt(value):
 
 def get_uid(src):
     try:
-        # print(src)
         uid = decrypt(src)
-        # print(uid)
         user = User.objects.filter(id=uid).first()
         if user is not None:
             return user
         else:
             return None
+    except TypeError:
+        return None
     except signing.BadSignature:
         return None
 
-def updateBrowse(uid, did):
-    broList = Browse.objects.filter(uid=uid, did=did)
-    if broList.exists():
-        bro = broList.first()
-        bro.create_time = datetime.datetime.now()
-        bro.save()
+def updateBrowse(user, doc):
+    browse = Browse.objects.filter(uid=user, did=doc).first()
+    if browse:
+        browse.create_time = datetime.datetime.now()
+        browse.save()
     else:
-        user = User.objects.filter(uid=uid).first()
-        did = Doc.objects.filter(did=did).first()
-        bro = Browse(uid = user, did = did, create_time = datetime.datetime.now())
-        bro.save()
+        Browse.objects.create(uid=user, did=doc)
+
+def getPower(user, doc):
+    if doc.creator == user:
+        return 4
+    power = doc.type
+    docp = DocPower.objects.filter(member=user, doc=doc).first()
+    role = 0 if docp is None else docp.role
+    return max(role, power)

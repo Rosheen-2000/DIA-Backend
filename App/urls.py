@@ -17,6 +17,7 @@ urlpatterns = [
     path('userinfo/basic/', views.userinfo_basic, name='userinfo_basic'),
     path('userinfo/all/', views.userinfo_all, name='userinfo_all'),
     path('userinfo/changeavatar/', views.change_avatar, name='change_avatar'),
+    path('userinfo/getteam/', views.getteam, name = 'getteam'),
 
     # doc
     path('doc/deletedoc/', views.deletedoc, name='deletedoc'),
@@ -28,6 +29,8 @@ urlpatterns = [
     path('doc/getdoccontent/', views.getdoccontent, name='getdoccontent'),
     path('doc/own/file/', views.doc_own_file, name='doc_own_file'),
     path('doc/trash/file/', views.doc_trash_file, name='doc_trash_file'),
+    path('doc/favorites/file/', views.doc_favorites_file, name = 'doc_favorites_file'),
+    path('doc/used/file/', views.doc_used_file, name = 'doc_used_file'),
 
     # template
     path('template/getall/', views.get_template, name='get_template'),
