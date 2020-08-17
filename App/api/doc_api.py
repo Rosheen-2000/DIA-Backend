@@ -304,13 +304,17 @@ def setPower(user, tarName, docid, power):
     if setterPower < 3 or (setterPower == 3 and power == 3):
         return 'No permission'
     is_commented = (power >= 1)
-    dp = DocPower.objects.filter(member = tar, doc = doc).first()
-    if dp is None:
-        dp = DocPower(member = tar, doc = doc, role = power, is_commented = is_commented)
+    dp = DocPower.objects.filter(member=tar, doc=doc).first()
+    if power == 0:
+        if dp is not None:
+            dp.delete()
     else:
-        dp.role = power
-        dp.is_commented = is_commented
-    dp.save()
+        if dp is None:
+            dp = DocPower(member=tar, doc=doc, role=power, is_commented=is_commented)
+        else:
+            dp.role = power
+            dp.is_commented = is_commented
+        dp.save()
     return 'true'
 
 def getDesktopFile(user):

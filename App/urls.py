@@ -4,10 +4,12 @@ from App import views
 app_name = 'APP'
 
 urlpatterns = [
+
     # passport
     path('passport/login/', views.login, name='login'),
     path('passport/register/', views.register, name='register'),
     path('passport/check/', views.check, name='check'),
+
 
     # userinfo
     path('userinfo/changename/', views.modify_uname, name='changename'),
@@ -18,6 +20,7 @@ urlpatterns = [
     path('userinfo/all/', views.userinfo_all, name='userinfo_all'),
     path('userinfo/changeavatar/', views.change_avatar, name='change_avatar'),
     path('userinfo/getteam/', views.getteam, name = 'getteam'),
+
 
     # doc
     path('doc/deletedoc/', views.deletedoc, name='deletedoc'),
@@ -41,8 +44,22 @@ urlpatterns = [
     path('doc/desktop/file/', views.doc_desktop_file, name = 'doc_desktop_file'),
     path('doc/desktop/folder/', views.doc_desktop_folder, name = 'doc_desktop_folder'),
 
+
+    #team
+    path('team/create/', views.team_create, name = 'team_create'),
+    path('team/disband/', views.team_disband, name = 'team_disband'),
+    path('team/getlist/', views.team_getlist, name = 'team_getlist'),
+    path('team/getinfo/', views.get_team_info, name='get_team_info'),
+    path('team/invite/', views.invite, name='invite'),
+
+
+    #user
+    path('user/getlistbyname/', views.get_user_by_uname, name='get_user_by_uname'),
+
+
     # template
     path('template/getall/', views.get_template, name='get_template'),
+
 
     # comment
     path('comment/new/', views.new_comment, name='new_comment'),
@@ -50,7 +67,8 @@ urlpatterns = [
     path('comment/replyto/', views.reply, name='reply'),
     path('comment/delete/', views.delete_comment, name='delete_comment'),
 
+
     # etc
     path('add_data/', views.add_data, name='add_data'),
-    path('my_test/', views.my_test, name='my_test')
+    path('my_test/', views.my_test, name='my_test'),
 ]

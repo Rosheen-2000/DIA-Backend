@@ -254,6 +254,60 @@ def set_power(request):
         return JsonResponse({'msg': 'Wrong power'})
 
 
+#team
+def team_create(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    teamname = request.POST.get('teamname')
+    # print(teamname)
+    # teammenbers = request.POST.get('initmember')
+    # print(teammenbers)
+    # print('--------------------------------------------')
+    ret = team_api.createTeam(user, teamname)
+    return JsonResponse(ret)
+
+def team_disband(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    teamid = request.POST.get('teamid')
+    msg = team_api.disbandTeam(user, teamid)
+    return JsonResponse({'msg': msg})
+
+def team_getlist(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    teamlist = team_api.getTeamList(user)
+    return JsonResponse({'teamlist': teamlist})
+
+def get_team_info(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    teamid = request.GET.get('teamid')
+    teamname, creatorname, creatoravatar, createtime, member = team_api.get_team_info(user, teamid)
+    return JsonResponse({'teamname':teamname, 'creatorname':creatorname, \
+                         'creatoravatar':creatoravatar, 'createtime':createtime, 'member':member})
+
+def get_user_by_uname(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    uname = request.GET.get('username')
+    username, avatar, userid = team_api.get_user_by_uname(uname)
+    return JsonResponse({'username':username, 'avatar':avatar, 'userid':userid})
+
+def invite(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    teamid = request.POST.get('teamid')
+    uid = request.POST.get('uid')
+    return JsonResponse({'msg':team_api.invite(user, teamid, uid)})
+
+
 # comment
 def new_comment(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
@@ -299,6 +353,7 @@ def doc_desktop_folder(request):
         return JsonResponse({'msg': 'No permission'}, status=401)
     folders = doc_api.getDesktopFolder(user)
     return JsonResponse({'folders': folders})
+
 
 #etc
 def add_data(request):
