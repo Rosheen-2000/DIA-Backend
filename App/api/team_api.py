@@ -85,3 +85,56 @@ def invite(user, teamid, uid):
     Message.objects.create(team=team, content=content, receiver=invitee, mode=1)
     return 'true'
 
+def deal_invitation(user, teamid, handle):
+    team = Team.objects.filter(id=teamid).first()
+    if not team:
+        return 'The team does not exist.'
+    if handle not in ('true', 'false'):
+        return 'Handle type error.'
+    message = Message.objects.filter(team=team, receiver=user, mode=1).first()
+    if not message:
+        return 'The invitation does not exist.'
+    if message.is_read: # 防止重复处理
+        return 'The invitation has been dealt.'
+    tmember = TeamMember.objects.filter(team=team, member=user).first()
+    if tmember:
+        return 'You are already the team member'
+    message.is_read = True
+    message.save()
+    if handle == 'true':
+        TeamMember.objects.create(team=team, member=user, role=1)
+        # 给予当前团队文档权限
+        for doc in Doc.objects.filter(team=team): # 包含回收站中的文档
+            docpower = DocPower.objects.filter(doc=doc, member=user).first()
+            if not docpower:
+                DocPower.objects.create(doc=doc, member=user, role=1, is_commented=1)
+            #     docpower.role = 1
+            #     docpower.is_commented = 1
+            #     docpower.save()
+            # else:
+            #     DocPower.objects.create(doc=doc, member=user, role=1, is_commented=1)
+    # 生成处理结果消息
+    content = 'The invitation to {0} has been {1}.'.format(user.name, 'accepted' if handle == 'true' else 'declined')
+    Message.objects.create(content=content, receiver=team.creator, mode=0)
+    return 'true'
+
+def remove_user(handler, teamid, uid):
+    team = Team.objects.filter(id=teamid).first()
+    if not team:
+        return 'The team does not exist.'
+    user = User.objects.filter(id=uid).first()
+    if not User:
+        return 'The user does not exist.'
+    if team.creator != handler: # 仅队长可删
+        return 'No permission to remove member.'
+    team_member = TeamMember.objects.filter(team=team, member=user).first()
+    if not team_member:
+        return 'The user is not in the team.'
+    for doc in Doc.objects.filter(creator=user, team=team): # 直接删除该用户所有团队文档
+        doc.delete()
+    team_member.delete()
+    for docpower in DocPower.objects.filter(member=user, doc__team=team):
+        docpower.delete()
+    Message.objects.create(receiver=user, content='You were kicked out of the team.')
+    return 'true'
+

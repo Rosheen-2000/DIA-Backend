@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import render
 
 from . import tools
-from .api import user_api, doc_api, team_api, comment_api, other_api
+from .api import user_api, doc_api, team_api, comment_api, other_api, message_api
 
 # user
 def login(request):
@@ -307,6 +307,22 @@ def invite(request):
     uid = request.POST.get('uid')
     return JsonResponse({'msg':team_api.invite(user, teamid, uid)})
 
+def deal_invitation(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    teamid = request.POST.get('teamid')
+    handle = request.POST.get('handle')
+    return JsonResponse({'msg':team_api.deal_invitation(user, teamid, handle)})
+
+def remove_user(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    teamid = request.POST.get('teamid')
+    uid = request.POST.get('uid')
+    return JsonResponse({'msg':team_api.remove_user(user, teamid, uid)})
+
 
 # comment
 def new_comment(request):
@@ -340,6 +356,16 @@ def delete_comment(request):
     commentid = request.POST.get('commentid')
     return JsonResponse({'msg':comment_api.delete_comment(user, commentid)})
 
+
+#message
+def get_unread_number(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    return JsonResponse({'num':message_api.get_unread_number(user)})
+
+
+#doc-system
 def doc_desktop_file(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
@@ -352,6 +378,38 @@ def doc_desktop_folder(request):
     if user is None:
         return JsonResponse({'msg': 'No permission'}, status=401)
     folders = doc_api.getDesktopFolder(user)
+    return JsonResponse({'folders': folders})
+
+def doc_space_file(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    teamid = request.GET.get('spaceId')
+    files = doc_api.getTeamFile(user, teamid)
+    return JsonResponse({'files': files})
+
+def doc_space_folder(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    teamid = request.GET.get('spaceId')
+    folders = doc_api.getTeamFolder(user, teamid)
+    return JsonResponse({'folders': folders})
+
+def doc_folder_file(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    folderid = request.GET.get('folderId')
+    files = doc_api.getSubFile(user, folderid)
+    return JsonResponse({'files': files})
+
+def doc_folder_folder(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    folderid = request.GET.get('folderId')
+    folders = doc_api.getSubFolder(user, folderid)
     return JsonResponse({'folders': folders})
 
 

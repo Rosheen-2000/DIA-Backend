@@ -35,7 +35,7 @@ class Team(models.Model):
 class Folder(models.Model):
     # fid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
-    father = models.OneToOneField('self', on_delete=models.CASCADE, related_name='child', null=True)
+    father = models.ForeignKey('self', on_delete=models.CASCADE, related_name='child', null=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='folder')
     create_time = models.DateTimeField(auto_now_add=True)
     modify_time = models.DateTimeField(auto_now_add=True)

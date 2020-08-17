@@ -41,8 +41,15 @@ urlpatterns = [
     path('doc/get-corporation/', views.get_corporation, name = 'get_corporation'),
     path('doc/set-share-option/', views.set_share_option, name = 'set_share_option'),
     path('doc/set-power/', views.set_power, name = 'set_power'),
+
+
+    #doc-system
     path('doc/desktop/file/', views.doc_desktop_file, name = 'doc_desktop_file'),
     path('doc/desktop/folder/', views.doc_desktop_folder, name = 'doc_desktop_folder'),
+    path('doc/space/file/', views.doc_space_file, name = 'doc_space_file'),
+    path('doc/space/folder/', views.doc_space_folder, name = 'doc_space_folder'),
+    path('doc/folder/file/', views.doc_folder_file, name = 'doc_folder_file'),
+    path('doc/folder/folder/', views.doc_folder_folder, name = 'doc_folder_folder'),
 
 
     #team
@@ -51,6 +58,8 @@ urlpatterns = [
     path('team/getlist/', views.team_getlist, name = 'team_getlist'),
     path('team/getinfo/', views.get_team_info, name='get_team_info'),
     path('team/invite/', views.invite, name='invite'),
+    path('team/dealinginvite/', views.deal_invitation, name='deal_invitation'),
+    path('team/removeuser/', views.remove_user, name='remove_user'),
 
 
     #user
@@ -66,6 +75,10 @@ urlpatterns = [
     path('comment/get/', views.get_comment, name='get_comment'),
     path('comment/replyto/', views.reply, name='reply'),
     path('comment/delete/', views.delete_comment, name='delete_comment'),
+
+
+    #messgae
+    path('message/unreadnum/', views.get_unread_number, name='get_unread_number'),
 
 
     # etc

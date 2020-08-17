@@ -1,5 +1,6 @@
 """generate database test data"""
 import datetime
+import time
 import random
 import string
 from django.core import signing
@@ -160,9 +161,9 @@ def add_like_record():
 
 
 def my_test():
-    folder = Folder.objects.first()
-    folder.name = '123666'
-    folder.save()
+    for i in range(100000000):
+        print(i)
+        time.sleep(2)
 
 def encrypt(src):
     """encoding"""

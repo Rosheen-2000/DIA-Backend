@@ -6,6 +6,7 @@ from ..models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team,
 from ..tools import encrypt, decrypt, updateBrowse, getPower
 
 
+#doc
 def remove_doc(user, did):
     doc = Doc.objects.filter(id=did, isdeleted=0).first()
     if doc is None:
@@ -89,7 +90,7 @@ def new_doc(creator, title, template_id, folder_id, team_id):
             return 'No permisson to create documents in this team.', ''
         elif TeamMember.objects.filter(team=team, member=creator).first().role < 1:
             return 'No permisson to create documents in this team.', ''
-        elif folder.team != team: # 非团队文件夹
+        elif folder_id and folder.team != team:  # 非团队文件夹
             return 'Folder does not belong to this team.', ''
         # 黑名单未定，判断已加上
     elif folder and folder.team is not None: # 非个人文件夹
@@ -317,6 +318,8 @@ def setPower(user, tarName, docid, power):
         dp.save()
     return 'true'
 
+
+#doc-system
 def getDesktopFile(user):
     files = []
     docList = Doc.objects.filter(creator = user, isdeleted = 0, father = None)
@@ -330,6 +333,56 @@ def getDesktopFile(user):
 def getDesktopFolder(user):
     folders = []
     folderList = Folder.objects.filter(creator = user, isdeleted = 0, father = None)
+    for folder in folderList:
+        name = folder.name
+        id = str(folder.id)
+        folders.append({'name': name, 'id': id})
+    return folders
+
+def getTeamFile(user, teamid):
+    files = []
+    tmember = TeamMember.objects.filter(team=teamid, member=user).first()
+    if tmember is None:
+        files.append({'name': '', 'id': '', 'starred': ''})
+        return files
+    docList = Doc.objects.filter(team = teamid, isdeleted = 0, father = None)
+    for doc in docList:
+        if doc.content is None:
+            continue
+        name = doc.content.title
+        id = str(doc.id)
+        starred = Favorite.objects.filter(uid = user, did = doc).exists()
+        files.append({'name': name, 'id': id, 'starred': starred})
+    return files
+
+def getTeamFolder(user, teamid):
+    folders = []
+    tmember = TeamMember.objects.filter(team=teamid, member=user).first()
+    if tmember is None:
+        folders.append({'name': '', 'id': ''})
+        return folders
+    folderList = Folder.objects.filter(team = teamid, isdeleted = 0, father = None)
+    for folder in folderList:
+        name = folder.name
+        id = str(folder.id)
+        folders.append({'name': name, 'id': id})
+    return folders
+
+def getSubFile(user, folderid):
+    files = []
+    docList = Doc.objects.filter(isdeleted = 0, father = folderid)
+    for doc in docList:
+        if doc.content is None:
+            continue
+        name = doc.content.title
+        id = str(doc.id)
+        starred = Favorite.objects.filter(uid = user, did = doc).exists()
+        files.append({'name': name, 'id': id, 'starred': starred})
+    return files
+
+def getSubFolder(user, folderid):
+    folders = []
+    folderList = Folder.objects.filter(isdeleted = 0, father = folderid)
     for folder in folderList:
         name = folder.name
         id = str(folder.id)
