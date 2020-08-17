@@ -38,6 +38,8 @@ urlpatterns = [
     path('doc/get-corporation/', views.get_corporation, name = 'get_corporation'),
     path('doc/set-share-option/', views.set_share_option, name = 'set_share_option'),
     path('doc/set-power/', views.set_power, name = 'set_power'),
+    path('doc/desktop/file/', views.doc_desktop_file, name = 'doc_desktop_file'),
+    path('doc/desktop/folder/', views.doc_desktop_folder, name = 'doc_desktop_folder'),
 
     # template
     path('template/getall/', views.get_template, name='get_template'),
@@ -45,6 +47,8 @@ urlpatterns = [
     # comment
     path('comment/new/', views.new_comment, name='new_comment'),
     path('comment/get/', views.get_comment, name='get_comment'),
+    path('comment/replyto/', views.reply, name='reply'),
+    path('comment/delete/', views.delete_comment, name='delete_comment'),
 
     # etc
     path('add_data/', views.add_data, name='add_data'),

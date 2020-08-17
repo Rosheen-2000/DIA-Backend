@@ -271,6 +271,34 @@ def get_comment(request):
     comments = comment_api.get_comment(docid)
     return JsonResponse({'comments':comments})
 
+def reply(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    commentid = request.POST.get('commentid')
+    content = request.POST.get('content')
+    return JsonResponse({'msg':comment_api.reply(user, commentid, content)})
+
+def delete_comment(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    commentid = request.POST.get('commentid')
+    return JsonResponse({'msg':comment_api.delete_comment(user, commentid)})
+
+def doc_desktop_file(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    files = doc_api.getDesktopFile(user)
+    return JsonResponse({'files': files})
+
+def doc_desktop_folder(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    folders = doc_api.getDesktopFolder(user)
+    return JsonResponse({'folders': folders})
 
 #etc
 def add_data(request):

@@ -162,7 +162,7 @@ class Comment(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     modify_time = models.DateTimeField(auto_now_add=True)
     star = models.IntegerField(default=0)
-    quote = models.OneToOneField('self', on_delete=models.CASCADE, related_name='isquoted', null=True)
+    quote = models.ForeignKey('self', on_delete=models.CASCADE, related_name='isquoted', null=True)
 
     def __str__(self):
         return self.creator.name + '_' + self.doc.__str__()

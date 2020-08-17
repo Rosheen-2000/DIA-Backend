@@ -109,7 +109,7 @@ def new_doc(creator, title, template_id, folder_id, team_id):
 
 
 def modify_doc_content(modifier, did, content):
-    doc = Doc.objects.filter(id=did).first()
+    doc = Doc.objects.filter(id=did, isdeleted=0).first()
     if doc:
         # doc_power = DocPower.objects.filter(doc=doc, member=modifier).first()
         authority = getPower(modifier, doc)
@@ -131,7 +131,7 @@ def get_all_templates():
     return templates
 
 def modifyDocTitle(user, docid, title):
-    doc = Doc.objects.filter(id=docid).first()
+    doc = Doc.objects.filter(id=docid, isdeleted=0).first()
     if doc is None:
         return 'Doc inexisted'
     power = getPower(user, doc)
@@ -147,7 +147,7 @@ def modifyDocTitle(user, docid, title):
     return 'true'
 
 def getDocContent(user, docid):
-    doc = Doc.objects.filter(id=docid).first()
+    doc = Doc.objects.filter(id=docid, isdeleted=0).first()
     if doc is None:
         return {'Title': '', 'Content': '', 'starred': False}
     power = getPower(user, doc)
@@ -189,6 +189,8 @@ def getFavoriteFile(user):
     files = []
     favList = Favorite.objects.filter(uid=user).order_by('-create_time')
     for fav in favList:
+        if fav.did.isdeleted:
+            continue
         id = fav.did.id
         name = fav.did.content.title
         files.append({'name': name, 'id': str(id), 'starred': True})
@@ -198,6 +200,8 @@ def getBrowsedFile(user):
     files = []
     broList = Browse.objects.filter(uid=user).order_by('-create_time')
     for bro in broList:
+        if bro.did.isdeleted:
+            continue
         id = bro.did.id
         name = bro.did.content.title
         fav = False if Favorite.objects.filter(did=bro.did, uid=bro.uid).first() is None else True
@@ -205,7 +209,7 @@ def getBrowsedFile(user):
     return files
 
 def favordoc(user, did):
-    doc = Doc.objects.filter(id=did).first()
+    doc = Doc.objects.filter(id=did, isdeleted=0).first()
     if doc is None:
         return 'Wrong did'
     fav = Favorite.objects.filter(uid=user, did=doc).first()
@@ -216,7 +220,7 @@ def favordoc(user, did):
         return 'true'
 
 def unfavordoc(user, did):
-    doc = Doc.objects.filter(id=did).first()
+    doc = Doc.objects.filter(id=did, isdeleted=0).first()
     if doc is None:
         return 'Wrong did'
     fav = Favorite.objects.filter(uid=user, did=doc).first()
@@ -227,7 +231,7 @@ def unfavordoc(user, did):
         return 'true'
 
 def share_to_team(user, did, tid):
-    doc = Doc.objects.filter(id=did).first()
+    doc = Doc.objects.filter(id=did, isdeleted=0).first()
     team = Team.objects.filter(id=tid).first()
     if not doc:
         return 'The doc does not exist'
@@ -257,7 +261,7 @@ def share_to_team(user, did, tid):
     return 'true'
 
 def get_power(user, docid):
-    doc = Doc.objects.filter(id=docid).first()
+    doc = Doc.objects.filter(id=docid, isdeleted=0).first()
     if doc:
         power = DocPower.objects.filter(doc=doc, member=user).first()
         power = power.role if power else 0
@@ -277,7 +281,7 @@ def getCorporation(docid):
 def setShareOption(user, docid, shareOption):
     if shareOption > 2 or shareOption < 0:
         return 'Power invalid'
-    doc = Doc.objects.filter(id=docid).first()
+    doc = Doc.objects.filter(id=docid, isdeleted=0).first()
     if doc is None:
         return 'Doc inexisted'
     power = getPower(user, doc)
@@ -293,7 +297,7 @@ def setPower(user, tarName, docid, power):
     tar = User.objects.filter(name=tarName).first()
     if tar is None:
         return 'Target inexisted'
-    doc = Doc.objects.filter(id=docid).first()
+    doc = Doc.objects.filter(id=docid, isdeleted=0).first()
     if doc is None:
         return 'Doc inexisted'
     setterPower = getPower(user, doc)
@@ -308,4 +312,23 @@ def setPower(user, tarName, docid, power):
         dp.is_commented = is_commented
     dp.save()
     return 'true'
+
+def getDesktopFile(user):
+    files = []
+    docList = Doc.objects.filter(creator = user, isdeleted = 0, father = None)
+    for doc in docList:
+        name = doc.content.title
+        id = str(doc.id)
+        starred = Favorite.objects.filter(uid = user, did = doc).exists()
+        files.append({'name': name, 'id': id, 'starred': starred})
+    return files
+
+def getDesktopFolder(user):
+    folders = []
+    folderList = Folder.objects.filter(creator = user, isdeleted = 0, father = None)
+    for folder in folderList:
+        name = folder.name
+        id = str(folder.id)
+        folders.append({'name': name, 'id': id})
+    return folders
 
