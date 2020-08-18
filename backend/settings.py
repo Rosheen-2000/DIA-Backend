@@ -29,6 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+import dwebsocket
 
 # Application definition
 
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'dwebsocket',
     'App.apps.AppConfig',
 ]
 
@@ -51,6 +53,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# 为所有的URL提供websocket，如果只是单独的视图需要可以不选
+MIDDLEWARE_CLASSES=['dwebsocket.middleware.WebSocketMiddleware']
+
+WEBSOCKET_ACCEPT_ALL=True  # 可以允许每一个单独的视图实用websockets
+
 
 ROOT_URLCONF = 'backend.urls'
 
