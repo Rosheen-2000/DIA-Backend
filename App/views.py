@@ -1,4 +1,4 @@
-import json
+import json, time
 from django.http import HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import render
 
@@ -384,7 +384,7 @@ def doc_space_file(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
-    teamid = request.GET.get('spaceId')
+    teamid = request.POST.get('spaceId')
     files = doc_api.getTeamFile(user, teamid)
     return JsonResponse({'files': files})
 
@@ -392,7 +392,7 @@ def doc_space_folder(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
-    teamid = request.GET.get('spaceId')
+    teamid = request.POST.get('spaceId')
     folders = doc_api.getTeamFolder(user, teamid)
     return JsonResponse({'folders': folders})
 
@@ -422,4 +422,6 @@ def add_data(request):
 def my_test(request):
     tools.my_test()
     return HttpResponse('测试成功')
+
+
 
