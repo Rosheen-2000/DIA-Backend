@@ -484,7 +484,10 @@ def check_doc_status(request):
 @accept_websocket
 def test_websocket(request):
     uname = request.GET.get('name')
+    print(uname)
     if request.is_websocket:
+        print('find websocket')
+        print(type(request.websocket))
         num = other_api.offline_message(uname)
         dit = {'basicmsg': 1, 'num': num}
         request.websocket.send(json.dumps(dit))
