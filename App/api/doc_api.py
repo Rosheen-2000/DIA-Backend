@@ -402,3 +402,23 @@ def getSubFolder(user, folderid):
         folders.append({'name': name, 'id': id})
     return folders
 
+def newFolder(user, folderName, folderid, teamid):
+    if folderName == '':
+        folderName = '新建文件夹'
+    if folderid != '':
+        parentFolder = Folder.objects.filter(id = folderid).first()
+        if not parentFolder:
+            return 'Parent folder inexisted'
+    else:
+        parentFolder = None
+    if teamid != '':
+        team = Team.objects.filter(id = teamid).first()
+        if not team:
+            return 'Team inexisted'
+    else:
+        team = None
+    # no need to judge same-name folders
+    folder = Folder(name = folderName, father = parentFolder, creator = user, team = team)
+    folder.save()
+    return 'true'
+

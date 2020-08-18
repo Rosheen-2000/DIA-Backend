@@ -445,6 +445,18 @@ def doc_folder_folder(request):
     return JsonResponse({'folders': folders})
 
 
+#folder
+def folder_new_folder(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    folderName = request.POST.get('folderName')
+    folderid = request.POST.get('folderId')
+    teamid = request.POST.get('spaceId')
+    msg = doc_api.newFolder(user, folderName, folderid, teamid)
+    return JsonResponse({'msg': msg})
+
+
 #etc
 def add_data(request):
     tools.add_data()
@@ -471,7 +483,7 @@ def check_doc_status(request):
 
 @accept_websocket
 def test_websocket(request):
-    uname = request.GET.get('username')
+    uname = request.GET.get('name')
     if request.is_websocket:
         num = other_api.offline_message(uname)
         dit = {'basicmsg': 1, 'num': num}

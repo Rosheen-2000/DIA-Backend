@@ -52,6 +52,10 @@ urlpatterns = [
     path('doc/folder/folder/', views.doc_folder_folder, name = 'doc_folder_folder'),
 
 
+    #folder
+    path('folder/new-folder/', views.folder_new_folder, name = 'folder_new_folder'),
+
+
     #team
     path('team/create/', views.team_create, name = 'team_create'),
     path('team/disband/', views.team_disband, name = 'team_disband'),
