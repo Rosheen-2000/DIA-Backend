@@ -12,6 +12,8 @@ def new_comment(user, docid, content):
         power = DocPower.objects.filter(doc=doc, member=user).first()
         if (power and power.is_commented == 1) or doc.type >= 1:
             Comment.objects.create(creator=user, content=content, doc=doc)
+            msg = "Your doc '{0}' has been commented".format(doc.content.title)
+            Message.objects.create(receiver=user, content=msg, mode=2, doc=doc)
             return 'true'
         return 'No permission'
     return 'doc does not exists.'
