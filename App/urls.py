@@ -60,6 +60,7 @@ urlpatterns = [
     path('team/invite/', views.invite, name='invite'),
     path('team/dealinginvite/', views.deal_invitation, name='deal_invitation'),
     path('team/removeuser/', views.remove_user, name='remove_user'),
+    path('team/getpower/', views.get_team_power, name='get_team_power'),
 
 
     #user

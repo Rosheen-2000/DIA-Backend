@@ -356,6 +356,14 @@ def delete_comment(request):
     commentid = request.POST.get('commentid')
     return JsonResponse({'msg':comment_api.delete_comment(user, commentid)})
 
+def get_team_power(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    teamid = request.POST.get('teamid')
+    power = team_api.get_power(user, teamid)
+    return JsonResponse({'userPower': power})
+
 
 #message
 def get_unread_number(request):
@@ -422,6 +430,5 @@ def add_data(request):
 def my_test(request):
     tools.my_test()
     return HttpResponse('测试成功')
-
 
 

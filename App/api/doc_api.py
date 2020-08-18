@@ -322,7 +322,7 @@ def setPower(user, tarName, docid, power):
 #doc-system
 def getDesktopFile(user):
     files = []
-    docList = Doc.objects.filter(creator = user, isdeleted = 0, father = None)
+    docList = Doc.objects.filter(creator = user, isdeleted = 0, father = None, team=None)
     for doc in docList:
         name = doc.content.title
         id = str(doc.id)
@@ -332,7 +332,7 @@ def getDesktopFile(user):
 
 def getDesktopFolder(user):
     folders = []
-    folderList = Folder.objects.filter(creator = user, isdeleted = 0, father = None)
+    folderList = Folder.objects.filter(creator = user, isdeleted = 0, father = None, team=None)
     for folder in folderList:
         name = folder.name
         id = str(folder.id)

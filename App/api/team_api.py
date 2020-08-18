@@ -60,8 +60,9 @@ def get_team_info(user, teamid):
             continue
         members.append({'uid':str(member.member.id), 'uname':member.member.name,
                         'useravatar':member.member.avatar.url if member.member.avatar else ''})
+    teamtime = datetime.date.strftime(team.create_time, '%Y-%m-%d')
     return team.name, team.creator.name, team.creator.avatar.url if team.creator.avatar else '', \
-           team.create_time, members
+           teamtime, members
 
 def get_user_by_uname(uname):
     user = User.objects.filter(name=uname).first()
@@ -137,4 +138,12 @@ def remove_user(handler, teamid, uid):
         docpower.delete()
     Message.objects.create(receiver=user, content='You were kicked out of the team.')
     return 'true'
+
+def get_power(user, teamid):
+    team = Team.objects.filter(id=teamid).first()
+    if not team:
+        return 0
+    teampower = TeamMember.objects.filter(member=user, team=team).first()
+    power = 0 if teampower is None else teampower.role
+    return power
 
