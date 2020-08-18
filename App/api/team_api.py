@@ -54,6 +54,7 @@ def get_team_info(user, teamid):
     if tmember is None:
         return '', '', '', '', ''
     # print(tmember.id)
+    ctime = datetime.datetime.strftime(team.create_time, '%Y-%m-%d')
     members = []
     for member in TeamMember.objects.filter(team=team):
         if member.member is None:
@@ -61,7 +62,7 @@ def get_team_info(user, teamid):
         members.append({'uid':str(member.member.id), 'uname':member.member.name,
                         'useravatar':get_avatar_url(member.member)})
     return team.name, team.creator.name, get_avatar_url(team.creator), \
-           team.create_time, members
+           ctime, members
 
 def get_user_by_uname(uname):
     user = User.objects.filter(name=uname).first()
