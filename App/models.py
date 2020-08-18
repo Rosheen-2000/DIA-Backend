@@ -188,6 +188,7 @@ class Message(models.Model):
     is_read = models.BooleanField(default=False)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
     doc = models.ForeignKey(Doc, on_delete=models.CASCADE, null=True)
+    is_send = models.IntegerField(default=0)
 
     def __str__(self):
         return 'to' + self.receiver.name 

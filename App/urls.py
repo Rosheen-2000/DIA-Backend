@@ -82,9 +82,11 @@ urlpatterns = [
     #messgae
     path('message/unreadnum/', views.get_unread_number, name='get_unread_number'),
     path('message/getall/', views.message_getall, name = 'message_getall'),
+    path('message/create_normal_message', views.create_normal_message, name='create_normal_message'),
 
 
     # etc
     path('add_data/', views.add_data, name='add_data'),
+    path('ws/message/echo', views.test_websocket, name='test_websocket'),
     path('my_test/', views.my_test, name='my_test'),
 ]

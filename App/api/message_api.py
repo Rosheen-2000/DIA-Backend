@@ -23,3 +23,9 @@ def getAllMessage(user):
         msgs.append({'mid': mid, 'msgtype': msgtype, 'isread': isread, 'content': content, 'teamid': teamid, 'docid': docid, 'createtime': createtime})
     return msgs
 
+def create_normal_message(uname, content):
+    user = User.objects.filter(name=uname).first()
+    if user is None:
+        return
+    Message.objects.create(receiver=user, content=content, mode=0)
+

@@ -39,3 +39,28 @@ def check_doc_status():
                 doc.edit_status = 0
                 doc.save()
 
+def offline_message(uname):
+    user = User.objects.filter(name=uname).first()
+    if user is None:
+        return 0
+    msgs = Message.objects.filter(receiver=user, is_send=0)
+    num = msgs.count()
+    for msg in msgs:
+        msg.is_send = 1
+        msg.save()
+    return num
+
+def online_message(uname):
+    user = User.objects.filter(name=uname).first()
+    if user is None:
+        return None
+    msg = Message.objects.filter(receiver=user, is_send=0).first()
+    if msg is None:
+        return None
+    else:
+        dit = {'basicmsg':0, 'mid':msg.id, 'msgtype':msg.mode, 'content':msg.content,
+               'teamid':str(msg.team), 'docid':str(msg.doc), 'createtime':msg.create_time}
+        msg.is_send = 1
+        msg.save()
+        return dit
+

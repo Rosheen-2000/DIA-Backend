@@ -1,6 +1,7 @@
 import json, time
 from django.http import HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import render
+from dwebsocket.decorators import accept_websocket,require_websocket
 
 from . import tools
 from .api import user_api, doc_api, team_api, comment_api, other_api, message_api
@@ -389,6 +390,12 @@ def message_getall(request):
     msgs = message_api.getAllMessage(user)
     return JsonResponse({'msgs': msgs})
 
+def create_normal_message(request):
+    uname = request.GET.get('uname')
+    content = request.GET.get('content')
+    message_api.create_normal_message(uname, content)
+    return JsonResponse({'msg': True})
+
 
 #doc-system
 def doc_desktop_file(request):
@@ -462,6 +469,24 @@ def check_doc_status(request):
     other_api.check_doc_status()
     return HttpResponse('check begin')
 
+@accept_websocket
+def test_websocket(request):
+    uname = request.GET.get('username')
+    if request.is_websocket:
+        num = other_api.offline_message(uname)
+        dit = {'basicmsg': 1, 'num': num}
+        request.websocket.send(json.dumps(dit))
+        while 1:
+            time.sleep(0.2)  ## 向前端发送时间
+            dit2 = other_api.online_message(uname)
+            if dit2 is None:
+                continue
+            request.websocket.send(json.dumps(dit2))
+            # dit = {
+            #     'msg': "ssh's test",
+            #     'time': time.strftime('%Y.%m.%d %H:%M:%S', time.localtime(time.time()))
+            # }
+            # request.websocket.send(json.dumps(dit))
 
 def my_test(request):
     tools.my_test()
