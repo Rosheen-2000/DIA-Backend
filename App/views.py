@@ -304,8 +304,8 @@ def invite(request):
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
     teamid = request.POST.get('teamid')
-    uid = request.POST.get('uid')
-    return JsonResponse({'msg':team_api.invite(user, teamid, uid)})
+    uidList = request.POST.get('uid')
+    return JsonResponse({'msg':team_api.invite(user, teamid, uidList)})
 
 def deal_invitation(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
@@ -371,6 +371,13 @@ def get_unread_number(request):
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
     return JsonResponse({'num':message_api.get_unread_number(user)})
+
+def message_getall(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    msgs = message_api.getAllMessage(user)
+    return JsonResponse({'msgs': msgs})
 
 
 #doc-system

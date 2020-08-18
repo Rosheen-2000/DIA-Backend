@@ -80,6 +80,7 @@ urlpatterns = [
 
     #messgae
     path('message/unreadnum/', views.get_unread_number, name='get_unread_number'),
+    path('message/getall/', views.message_getall, name = 'message_getall'),
 
 
     # etc

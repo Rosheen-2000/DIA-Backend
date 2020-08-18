@@ -70,21 +70,32 @@ def get_user_by_uname(uname):
         return '', '', ''
     return user.name, user.avatar.url if user.avatar else '', user.id
 
-def invite(user, teamid, uid):
+def invite(user, teamid, uidList):
     team = Team.objects.filter(id=teamid).first()
+    print(teamid)
     if not team:
         return 'Team does not exist.'
-    invitee = User.objects.filter(id=uid).first()
-    if not invitee:
-        return 'The invitee does not exist.'
-    if user != team.creator: # 暂定仅队长有权邀请新成员
+    if user != team.creator:  # 暂定仅队长有权邀请新成员
         return 'No permission to invite.'
-    team_member = TeamMember.objects.filter(team=team, member=invitee).first()
-    if team_member:
-        return 'This person is already in the team'
-    content = 'from team {0}'.format(team.name) # 邀请消息文本格式？
-    Message.objects.create(team=team, content=content, receiver=invitee, mode=1)
-    return 'true'
+    cnt = 0
+    for uid in uidList:
+        invitee = User.objects.filter(id=uid).first()
+        if not invitee:
+            # return 'The invitee does not exist.'
+            continue
+        team_member = TeamMember.objects.filter(team=team, member=invitee).first()
+        if team_member:
+            # return 'This person is already in the team'
+            continue
+        content = 'from team {0}'.format(team.name)  # 邀请消息文本格式？
+        Message.objects.create(team=team, content=content, receiver=invitee, mode=1)
+        cnt += 1
+    if cnt == len(uidList):
+        return 'true'
+    elif cnt == 0:
+        return 'false'
+    else:
+        return 'warn'
 
 def deal_invitation(user, teamid, handle):
     team = Team.objects.filter(id=teamid).first()
