@@ -1,9 +1,11 @@
 import datetime
+import re
 
 from django.utils import timezone
+from django.conf import settings
 
 from ..models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team, TeamMember, Favorite, Comment, Message, Folder, LikeRecord, DocStatus
-from ..tools import encrypt, decrypt, updateBrowse
+from ..tools import encrypt, decrypt, updateBrowse, get_avatar_url
 import time
 import base64
 import tempfile
@@ -34,10 +36,10 @@ def get_user_basicinfo(uid):
     user = User.objects.filter(id=uid).first()
     if user is None:
         return 'Can not find by this id', '', ''
-    return 'true', user.name, user.avatar.url if user.avatar else ''
+    return 'true', user.name, get_avatar_url(user)
 
 def get_user_allinfo(user):
-    avatar = user.avatar.url if user.avatar else ''
+    avatar = get_avatar_url(user)
     mail = user.mail if user.mail else ''
     tel = user.tel if user.tel else ''
     return 'true', user.name, avatar, mail, tel
@@ -75,6 +77,7 @@ def changePhoneNo(user, newphoneno):
     return 'true'
 
 def change_newavatar(user, new_avatar):
+    new_avatar = re.sub(r'data:image/\w*;base64,', '', new_avatar, 1)
     new_avatar = base64.b64decode(bytes(new_avatar, encoding='utf-8'))
     temp = tempfile.TemporaryFile()
     temp.write(new_avatar)

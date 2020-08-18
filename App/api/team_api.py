@@ -3,7 +3,7 @@ import datetime
 from django.utils import timezone
 
 from ..models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team, TeamMember, Favorite, Comment, Message, Folder, LikeRecord, DocStatus
-from ..tools import encrypt, decrypt, updateBrowse
+from ..tools import encrypt, decrypt, updateBrowse, get_avatar_url
 
 
 def createTeam(user, teamname):
@@ -59,43 +59,31 @@ def get_team_info(user, teamid):
         if member.member is None:
             continue
         members.append({'uid':str(member.member.id), 'uname':member.member.name,
-                        'useravatar':member.member.avatar.url if member.member.avatar else ''})
-    teamtime = datetime.date.strftime(team.create_time, '%Y-%m-%d')
-    return team.name, team.creator.name, team.creator.avatar.url if team.creator.avatar else '', \
-           teamtime, members
+                        'useravatar':get_avatar_url(member.membe)})
+    return team.name, team.creator.name, get_avatar_url(team.creator), \
+           team.create_time, members
 
 def get_user_by_uname(uname):
     user = User.objects.filter(name=uname).first()
     if not user:
         return '', '', ''
-    return user.name, user.avatar.url if user.avatar else '', user.id
+    return user.name, get_avatar_url(user), user.id
 
-def invite(user, teamid, uidList):
+def invite(user, teamid, uid):
     team = Team.objects.filter(id=teamid).first()
-    print(teamid)
     if not team:
         return 'Team does not exist.'
-    if user != team.creator:  # 暂定仅队长有权邀请新成员
+    invitee = User.objects.filter(id=uid).first()
+    if not invitee:
+        return 'The invitee does not exist.'
+    if user != team.creator: # 暂定仅队长有权邀请新成员
         return 'No permission to invite.'
-    cnt = 0
-    for uid in uidList:
-        invitee = User.objects.filter(id=uid).first()
-        if not invitee:
-            # return 'The invitee does not exist.'
-            continue
-        team_member = TeamMember.objects.filter(team=team, member=invitee).first()
-        if team_member:
-            # return 'This person is already in the team'
-            continue
-        content = 'from team {0}'.format(team.name)  # 邀请消息文本格式？
-        Message.objects.create(team=team, content=content, receiver=invitee, mode=1)
-        cnt += 1
-    if cnt == len(uidList):
-        return 'true'
-    elif cnt == 0:
-        return 'false'
-    else:
-        return 'warn'
+    team_member = TeamMember.objects.filter(team=team, member=invitee).first()
+    if team_member:
+        return 'This person is already in the team'
+    content = 'from team {0}'.format(team.name) # 邀请消息文本格式？
+    Message.objects.create(team=team, content=content, receiver=invitee, mode=1)
+    return 'true'
 
 def deal_invitation(user, teamid, handle):
     team = Team.objects.filter(id=teamid).first()
@@ -149,12 +137,4 @@ def remove_user(handler, teamid, uid):
         docpower.delete()
     Message.objects.create(receiver=user, content='You were kicked out of the team.')
     return 'true'
-
-def get_power(user, teamid):
-    team = Team.objects.filter(id=teamid).first()
-    if not team:
-        return 0
-    teampower = TeamMember.objects.filter(member=user, team=team).first()
-    power = 0 if teampower is None else teampower.role
-    return power
 

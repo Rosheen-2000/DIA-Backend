@@ -60,7 +60,6 @@ urlpatterns = [
     path('team/invite/', views.invite, name='invite'),
     path('team/dealinginvite/', views.deal_invitation, name='deal_invitation'),
     path('team/removeuser/', views.remove_user, name='remove_user'),
-    path('team/getpower/', views.get_team_power, name='get_team_power'),
 
 
     #user
@@ -80,7 +79,6 @@ urlpatterns = [
 
     #messgae
     path('message/unreadnum/', views.get_unread_number, name='get_unread_number'),
-    path('message/getall/', views.message_getall, name = 'message_getall'),
 
 
     # etc

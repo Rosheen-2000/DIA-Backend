@@ -1,4 +1,4 @@
-import json, time
+import json
 from django.http import HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import render
 
@@ -253,7 +253,25 @@ def set_power(request):
     except:
         return JsonResponse({'msg': 'Wrong power'})
 
+def request_modify_doc(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    docid = request.POST.get('docid')
+    msg, content, tag = other_api.request_modify_doc(user, docid)
+    return JsonResponse({'msg': msg, 'content':content, 'tag':tag})
+  
+def update_doc_status(request):
+    # 每次更新验证token
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    return JsonResponse({'msg': other_api.update_doc_status})
 
+def check_doc_status(request):
+    other_api.check_doc_status()
+    return HttpResponse('check begin')
+    
 #team
 def team_create(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
@@ -304,8 +322,8 @@ def invite(request):
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
     teamid = request.POST.get('teamid')
-    uidList = request.POST.get('uid')
-    return JsonResponse({'msg':team_api.invite(user, teamid, uidList)})
+    uid = request.POST.get('uid')
+    return JsonResponse({'msg':team_api.invite(user, teamid, uid)})
 
 def deal_invitation(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
@@ -356,14 +374,6 @@ def delete_comment(request):
     commentid = request.POST.get('commentid')
     return JsonResponse({'msg':comment_api.delete_comment(user, commentid)})
 
-def get_team_power(request):
-    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
-    if user is None:
-        return JsonResponse({'msg': 'No permission'}, status=401)
-    teamid = request.POST.get('teamid')
-    power = team_api.get_power(user, teamid)
-    return JsonResponse({'userPower': power})
-
 
 #message
 def get_unread_number(request):
@@ -371,13 +381,6 @@ def get_unread_number(request):
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
     return JsonResponse({'num':message_api.get_unread_number(user)})
-
-def message_getall(request):
-    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
-    if user is None:
-        return JsonResponse({'msg':'No permission'}, status=401)
-    msgs = message_api.getAllMessage(user)
-    return JsonResponse({'msgs': msgs})
 
 
 #doc-system
@@ -399,7 +402,7 @@ def doc_space_file(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
-    teamid = request.POST.get('spaceId')
+    teamid = request.GET.get('spaceId')
     files = doc_api.getTeamFile(user, teamid)
     return JsonResponse({'files': files})
 
@@ -407,7 +410,7 @@ def doc_space_folder(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
-    teamid = request.POST.get('spaceId')
+    teamid = request.GET.get('spaceId')
     folders = doc_api.getTeamFolder(user, teamid)
     return JsonResponse({'folders': folders})
 
@@ -437,5 +440,4 @@ def add_data(request):
 def my_test(request):
     tools.my_test()
     return HttpResponse('测试成功')
-
 

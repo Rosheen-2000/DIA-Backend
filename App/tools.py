@@ -207,3 +207,8 @@ def getPower(user, doc):
     docp = DocPower.objects.filter(member=user, doc=doc).first()
     role = 0 if docp is None else docp.role
     return max(role, power)
+
+def get_avatar_url(user):
+    if user.avatar:
+        return '106.15.74.187' + user.avatar.url
+    return ''

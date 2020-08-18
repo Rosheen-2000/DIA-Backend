@@ -106,8 +106,6 @@ def new_doc(creator, title, template_id, folder_id, team_id):
         if team.creator != creator:
             DocPower.objects.create(doc=doc, member=creator, role=4, is_commented=1) # 创建者权限为4
         #管理员未定
-    else:
-        DocPower.objects.create(doc=doc, member=creator, role=4, is_commented=True)
     return 'true', str(doc.id)
 
 
@@ -152,20 +150,18 @@ def modifyDocTitle(user, docid, title):
 def getDocContent(user, docid):
     doc = Doc.objects.filter(id=docid, isdeleted=0).first()
     if doc is None:
-        return {'Title': '', 'Content': '', 'starred': False, 'isTeamDoc': False}
+        return {'Title': '', 'Content': '', 'starred': False}
     power = getPower(user, doc)
     if power < 1:
-        return {'Title': '', 'Content': '', 'starred': False, 'isTeamDoc': False}
+        return {'Title': '', 'Content': '', 'starred': False}
     title = doc.content.title
     content = doc.content.content
-    # if Favorite.objects.filter(uid=user, did=docid).exists():
-    #     starred = True
-    # else:
-    #     starred = False
-    starred = Favorite.objects.filter(uid=user, did=doc).exists()
+    if Favorite.objects.filter(uid=user, did=docid).exists():
+        starred = True
+    else:
+        starred = False
     updateBrowse(user, doc)
-    isTeamDoc = (doc.team is not None)
-    return {'Title': title, 'Content': content, 'starred': starred, 'isTeamDoc': isTeamDoc}
+    return {'Title': title, 'Content': content, 'starred': starred}
 
 def get_own_file(user):
     # user = User.objects.filter(uid=uid).first()
@@ -280,16 +276,7 @@ def getCorporation(docid):
         name = dp.member.name
         avatar = dp.member.avatar.url if dp.member.avatar else ''
         power = dp.role
-        team = dp.doc.team
-        if team is None:
-            teammember = False
-        else:
-            teamm = TeamMember.objects.filter(team=team, member=dp.member)
-            teammember = False if teamm is None else True
-        if power < 4:
-            userList[power].append({'username': name, 'avatar': avatar, 'isTeamMember': teammember})
-        else:
-            userList[power].append({'username': name, 'avatar': avatar, 'isTeamMember': teammember, 'isCreator': dp.member==dp.doc.creator})
+        userList[power].append({'username': name, 'avatar': avatar})
     return {'level1': userList[1], 'level2': userList[2], 'level3': userList[3], 'level4': userList[4]}
 
 def setShareOption(user, docid, shareOption):
@@ -335,7 +322,7 @@ def setPower(user, tarName, docid, power):
 #doc-system
 def getDesktopFile(user):
     files = []
-    docList = Doc.objects.filter(creator = user, isdeleted = 0, father = None, team=None)
+    docList = Doc.objects.filter(creator = user, isdeleted = 0, father = None)
     for doc in docList:
         name = doc.content.title
         id = str(doc.id)
@@ -345,7 +332,7 @@ def getDesktopFile(user):
 
 def getDesktopFolder(user):
     folders = []
-    folderList = Folder.objects.filter(creator = user, isdeleted = 0, father = None, team=None)
+    folderList = Folder.objects.filter(creator = user, isdeleted = 0, father = None)
     for folder in folderList:
         name = folder.name
         id = str(folder.id)
