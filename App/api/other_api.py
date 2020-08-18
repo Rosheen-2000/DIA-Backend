@@ -38,3 +38,4 @@ def check_doc_status():
                 doc = Doc.objects.get(id=doc_status.doc.id)
                 doc.edit_status = 0
                 doc.save()
+
