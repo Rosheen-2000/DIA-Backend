@@ -59,7 +59,7 @@ def get_team_info(user, teamid):
         if member.member is None:
             continue
         members.append({'uid':str(member.member.id), 'uname':member.member.name,
-                        'useravatar':get_avatar_url(member.membe)})
+                        'useravatar':get_avatar_url(member.member)})
     return team.name, team.creator.name, get_avatar_url(team.creator), \
            team.create_time, members
 
