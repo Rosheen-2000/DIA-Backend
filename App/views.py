@@ -304,7 +304,9 @@ def invite(request):
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
     teamid = request.POST.get('teamid')
-    uidList = request.POST.get('uid')
+    uidList = request.POST.getlist('uid')
+    # print(teamid)
+    # print(uidList)
     return JsonResponse({'msg':team_api.invite(user, teamid, uidList)})
 
 def deal_invitation(request):
@@ -363,6 +365,14 @@ def get_team_power(request):
     teamid = request.POST.get('teamid')
     power = team_api.get_power(user, teamid)
     return JsonResponse({'userPower': power})
+
+def quit_team(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    teamid = request.POST.get('teamid')
+    msg = team_api.quit_team(user, teamid)
+    return JsonResponse({'msg': msg})
 
 
 #message
@@ -456,5 +466,4 @@ def check_doc_status(request):
 def my_test(request):
     tools.my_test()
     return HttpResponse('测试成功')
-
 

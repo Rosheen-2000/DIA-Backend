@@ -71,7 +71,7 @@ def get_user_by_uname(uname):
 
 def invite(user, teamid, uidList):
     team = Team.objects.filter(id=teamid).first()
-    print(teamid)
+    # print(teamid)
     if not team:
         return 'Team does not exist.'
     if user != team.creator:  # 暂定仅队长有权邀请新成员
@@ -156,4 +156,23 @@ def get_power(user, teamid):
     teampower = TeamMember.objects.filter(member=user, team=team).first()
     power = 0 if teampower is None else teampower.role
     return power
+
+def quit_team(user, teamid):
+    team = Team.objects.filter(id=teamid).first()
+    if not team:
+        return 'Wrong team id'
+    if user == team.creator:
+        return 'The captain cannot leave the team, you can choose to disband the team'
+    teamm = TeamMember.objects.filter(member=user, team=team).first()
+    if not teamm:
+        return 'You are not in this team'
+    teamm.delete()
+    for docpower in DocPower.objects.filter(member=user, doc__team=team):
+        docpower.delete()
+    for doc in Doc.objects.filter(creator=user, team=team):
+        doc.content.delete()
+        doc.delete()
+    msg = 'You have successfully exited the "{0}" team'.format(team.name)
+    Message.objects.create(receiver=user, content=msg)
+    return 'true'
 
