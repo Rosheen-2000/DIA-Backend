@@ -210,5 +210,5 @@ def getPower(user, doc):
 
 def get_avatar_url(user):
     if user.avatar:
-        return '106.15.74.187' + user.avatar.url
+        return user.avatar.url
     return ''
