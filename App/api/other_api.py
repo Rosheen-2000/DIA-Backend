@@ -73,6 +73,11 @@ def query_doc_status(user, docid):
         return 'No permission.'
     if doc.edit_status:
         return 'Being modified...', 1, ''
+    
+    docs = DocStatus.objects.filter(doc=doc).first()
+    if docs is None:
+        DocStatus.objects.create(doc=doc, user=user)
+
     return 'true', 0, DocStatus.objects.get(doc=doc).user.name
 
 def direct_quit(tag):
