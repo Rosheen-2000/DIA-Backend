@@ -30,7 +30,7 @@ def get_comment(docid):
                 'creatoravatar':comment.creator.avatar.url if comment.creator.avatar else '',
                 'creatorid':str(comment.creator.id),
                 'content':comment.content,
-                'createtime':comment.create_time,
+                'createtime':ctime,
                 'children':list(Comment.objects.filter(quote=comment))
             })
         return comments
