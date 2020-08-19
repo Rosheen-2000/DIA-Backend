@@ -161,9 +161,14 @@ def add_like_record():
 
 
 def my_test():
-    for i in range(100000000):
-        print(i)
-        time.sleep(2)
+    # for i in range(100000000):
+    #     print(i)
+    #     time.sleep(2)
+    doc = Doc()
+    ttdoc = Doc.objects.first()
+    print(type(doc))
+    print(type(Doc))
+    print(type(ttdoc))
 
 def encrypt(src):
     """encoding"""

@@ -509,7 +509,7 @@ def get_sub_tree(folder):
     for file in folder.child.all():
         if file.isdeleted == 1:
             continue
-        if type(file) == type(Doc):
+        if type(file) == type(Doc()):
             stree=[]
             dit = {'type': 'file', 'name': file.content.title, 'id': str(file.id), 'children': stree}
             tree.append(dit)
