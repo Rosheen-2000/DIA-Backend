@@ -86,7 +86,9 @@ urlpatterns = [
     #messgae
     path('message/unreadnum/', views.get_unread_number, name='get_unread_number'),
     path('message/getall/', views.message_getall, name = 'message_getall'),
-    path('message/create_normal_message', views.create_normal_message, name='create_normal_message'),
+    path('message/create_normal_message/', views.create_normal_message, name='create_normal_message'),
+    path('message/online-message/', views.online_message, name='online_message'),
+    path('message/offline-message/', views.offline_message, name='offline_message'),
 
 
     # etc

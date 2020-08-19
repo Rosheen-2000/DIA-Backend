@@ -396,6 +396,20 @@ def create_normal_message(request):
     message_api.create_normal_message(uname, content)
     return JsonResponse({'msg': True})
 
+def online_message(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    msgs = message_api.online_message(user)
+    return JsonResponse(msgs)
+
+def offline_message(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    msgs = message_api.offline_message(user)
+    return JsonResponse(msgs)
+
 
 #doc-system
 def doc_desktop_file(request):
@@ -509,4 +523,5 @@ def test_websocket(request):
 def my_test(request):
     tools.my_test()
     return HttpResponse('测试成功')
+
 
