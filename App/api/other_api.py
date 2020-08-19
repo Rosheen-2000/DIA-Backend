@@ -49,6 +49,7 @@ def update_doc_status(tag):
     if settings.editing_doc.get(tag):
         # 跳过数据库，仅在字典中更新？
         settings.editing_doc[tag].time = datetime.datetime.now()
+        return 'true'
     return 'Tag not found.'
 
 def check_doc_status():
@@ -63,4 +64,14 @@ def check_doc_status():
                 doc = Doc.objects.get(id=doc_status.doc.id)
                 doc.edit_status = 0
                 doc.save()
+
+def query_doc_status(user, docid):
+    doc = Doc.objects.filter(id=docid).first()
+    if not doc:
+        return 'Document not found.', '', ''
+    if getPower(user, doc) < 2:
+        return 'No permission.'
+    if doc.edit_status:
+        return 'Being modified...', 1, ''
+    return 'true', 0, DocStatus.objects.get(doc=doc).user.name
 

@@ -41,6 +41,12 @@ urlpatterns = [
     path('doc/get-corporation/', views.get_corporation, name = 'get_corporation'),
     path('doc/set-share-option/', views.set_share_option, name = 'set_share_option'),
     path('doc/set-power/', views.set_power, name = 'set_power'),
+    path('doc/requestmodify/', views.request_modify_doc, name='request_modify_doc'),
+    path('doc/updatestatus/', views.update_doc_status, name='update_doc_status'),
+    path('doc/querystatus/', views.query_doc_status, name='query_doc_status'),
+    path('doc/checkstatus/', views.check_doc_status, name='check_doc_status'),
+    path('doc/getdetailinfo/', views.get_detail_info, name='get_detail_info'),
+
 
 
     #doc-system

@@ -581,3 +581,11 @@ def getDeletedFolder(user):
         id = str(folder.id)
         folders.append({'foldername': name, 'folderid': id})
     return folders
+
+def get_detail_info(docid):
+    doc = Doc.objects.filter(id=docid).first()
+    if not doc:
+        return '', '', '', '', '', ''
+    return doc.content.title, doc.creator.name, doc.team.name if doc.team else '', \
+        doc.create_time.strftime('%Y-%m-%d %H:%M:%S'), str(doc.modify_num), \
+        doc.modify_time.strftime('%Y-%m-%d %H:%M:%S')

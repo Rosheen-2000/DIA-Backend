@@ -268,6 +268,15 @@ def team_create(request):
     ret = team_api.createTeam(user, teamname)
     return JsonResponse(ret)
 
+def get_detail_info(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    docid = request.POST.get('docid')
+    title, creatorname, teamname, createtime, modifytimes, lastmodify = doc_api.get_detail_info(docid)
+    return JsonResponse({'title':title, 'creatorname':creatorname, 'teamname':teamname, \
+        'createtime':createtime, 'modifytimes':modifytimes, 'lastmodify':lastmodify})
+
 def team_disband(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
@@ -558,6 +567,7 @@ def add_data(request):
     tools.add_data()
     return HttpResponse('添加成功')
 
+
 def request_modify_doc(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
@@ -572,12 +582,22 @@ def update_doc_status(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
         return JsonResponse({'msg': 'No permission'}, status=401)
-    return JsonResponse({'msg': other_api.update_doc_status})
+    tag = request.POST.get('tag')
+    return JsonResponse({'msg': other_api.update_doc_status(tag)})
 
 
 def check_doc_status(request):
     other_api.check_doc_status()
-    return HttpResponse('check begin')
+    return JsonResponse({'msg': 'check begin'})
+
+
+def query_doc_status(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    docid = request.POST.get('docid')
+    msg, status, name = other_api.query_doc_status(user, docid)
+    return JsonResponse({'msg': msg, 'status': status, 'name': name})
 
 @accept_websocket
 def test_websocket(request):
