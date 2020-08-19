@@ -432,7 +432,7 @@ def doc_folder_file(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
-    folderid = request.GET.get('folderId')
+    folderid = request.POST.get('folderId')
     files = doc_api.getSubFile(user, folderid)
     return JsonResponse({'files': files})
 
@@ -440,7 +440,7 @@ def doc_folder_folder(request):
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
         return JsonResponse({'msg':'No permission'}, status=401)
-    folderid = request.GET.get('folderId')
+    folderid = request.POST.get('folderId')
     folders = doc_api.getSubFolder(user, folderid)
     return JsonResponse({'folders': folders})
 
