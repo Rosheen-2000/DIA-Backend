@@ -62,13 +62,13 @@ def check_doc_status():
                 id = doc_status.id
                 did = doc_status.doc.id
                 DocStatus.objects.get(id=doc_status.id).delete()
-                del dic[doc_status.id]
+                del dic[str(doc_status.id)]
                 doc = Doc.objects.get(id=doc_status.doc.id)
                 doc.edit_status = 0
                 doc.save()
                 if DocStatus.objects.filter(id=id).first():
                     print('delete fail: %d' % id)
-                if Doc.objects.filter(id=id).first():
+                if Doc.objects.filter(id=id).first().edit_status:
                     print('unlock fail: %d' % did)
             else:
                 print(str(doc_status.id)+':'+str(ctime - doc_status.time))
@@ -90,10 +90,12 @@ def query_doc_status(user, docid):
     return 'true', 0, ''
 
 def direct_quit(tag):
-    doc_status = settings.EDITING_DOC[str(tag)]
-    del settings.EDITING_DOC[str(tag)]
-    DocStatus.objects.get(id=doc_status.id).delete()
-    doc = Doc.objects.get(id=doc_status.doc.id)
-    doc.edit_status = 0
-    doc.save()
-
+    if str(tag) in settings.EDITING_DOC.keys():
+        doc_status = settings.EDITING_DOC[str(tag)]
+        del settings.EDITING_DOC[str(tag)]
+        doc_status = DocStatus.objects.get(id=doc_status.id)
+        if doc_status:
+            doc_status.delete()
+        doc = Doc.objects.get(id=doc_status.doc.id)
+        doc.edit_status = 0
+        doc.save()
