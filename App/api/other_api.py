@@ -42,18 +42,18 @@ def request_modify_doc(user, docid):
     doc.edit_status = 1
     doc.save()
     doc_status = DocStatus.objects.create(user=user, doc=doc)
-    settings.editing_doc[doc_status.id] = doc_status # 伪全局字典维护所有写状态文件
+    settings.EDITING_DOC[doc_status.id] = doc_status # 伪全局字典维护所有写状态文件
     return 'true', doc_status.id
 
 def update_doc_status(tag):
-    if settings.editing_doc.get(tag):
+    if settings.EDITING_DOC.get(tag):
         # 跳过数据库，仅在字典中更新？
-        settings.editing_doc[tag].time = datetime.datetime.now()
+        settings.EDITING_DOC[tag].time = datetime.datetime.now()
         return 'true'
     return 'Tag not found.'
 
 def check_doc_status():
-    dic = settings.editing_doc
+    dic = settings.EDITING_DOC
     update_cycle = datetime.timedelta(seconds=2)
     while True:
         ctime = datetime.datetime.now()
@@ -81,8 +81,8 @@ def query_doc_status(user, docid):
     return 'true', 0, DocStatus.objects.get(doc=doc).user.name
 
 def direct_quit(tag):
-    doc_status = settings.editing_doc[tag]
-    del settings.editing_doc[tag]
+    doc_status = settings.EDITING_DOC[tag]
+    del settings.EDITING_DOC[tag]
     DocStatus.objects.get(id=doc_status.id).delete()
     doc = Doc.objects.get(id=doc_status.doc.id)
     doc.edit_status = 0
