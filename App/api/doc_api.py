@@ -42,6 +42,10 @@ def recover_doc(user, did):
     # print(doc.creator.uid)
     if user.id == doc.creator.id:
         doc.isdeleted = 0
+        folder = doc.father
+        if folder:
+            if folder.isdeleted == 1:
+                doc.father = None
         doc.save()
         return 'true'
     else:
@@ -49,6 +53,10 @@ def recover_doc(user, did):
             return 'You have no permission'
         else:
             doc.isdeleted = 0
+            folder = doc.father
+            if folder:
+                if folder.isdeleted == 1:
+                    doc.father = None
             doc.save()
             return 'true'
 
