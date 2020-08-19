@@ -227,12 +227,15 @@ def get_folder_power(user, folder):
     return permissionless
 
 def havePowerToDeleteFolder(user, folder):
-    docList = Doc.objects.filter(isdeleted = 0, father = folder)
+    # check both deleted and not-deleted folders and docs
+    # docList = Doc.objects.filter(isdeleted = 0, father = folder)
+    docList = Doc.objects.filter(father = folder)
     for doc in docList:
         power = getPower(user, doc)
         if power < 4:
             return False
-    subFolderList = Folder.objects.filter(isdeleted = 0, father = folder)
+    # subFolderList = Folder.objects.filter(isdeleted = 0, father = folder)
+    subFolderList = Folder.objects.filter(father = folder)
     for subFolder in subFolderList:
         if not havePowerToDeleteFolder(user, subFolder):
             return False
@@ -248,4 +251,16 @@ def _deleteFolder(folder):
     for subFolder in subFolderList:
         _deleteFolder(subFolder)
     folder.isdeleted = 1
+    folder.save()
+
+def _recoverFolder(folder):
+    # this function doesn't check the power, please call 'havePowerToDeleteFolder' to check the power first
+    docList = Doc.objects.filter(isdeleted = 1, father = folder)
+    for doc in docList:
+        doc.isdeleted = 0
+        doc.save()
+    subFolderList = Folder.objects.filter(isdeleted = 1, father = folder)
+    for subFolder in subFolderList:
+        _recoverFolder(subFolder)
+    folder.isdeleted = 0
     folder.save()

@@ -3,7 +3,7 @@ import datetime
 from django.utils import timezone
 
 from ..models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team, TeamMember, Favorite, Comment, Message, Folder, LikeRecord, DocStatus
-from ..tools import encrypt, decrypt, updateBrowse, getPower, get_folder_power, havePowerToDeleteFolder, _deleteFolder
+from ..tools import encrypt, decrypt, updateBrowse, getPower, get_folder_power, havePowerToDeleteFolder, _deleteFolder, _recoverFolder
 
 
 #doc
@@ -531,6 +531,7 @@ def getParentFolder(user, folderid):
         spaceName = ''
     parent = folder.father
     path = []
+    path.append({'folderId': folder.id, 'folderName': folder.name})
     while parent:
         id = str(parent.id)
         name = parent.name
@@ -547,3 +548,36 @@ def deleteFolder(user, folderid):
         return 'no permission'
     _deleteFolder(folder)
     return 'true'
+
+def confirmDeleteFolder(user, folderid):
+    folder = Folder.objects.filter(id = folderid).first()
+    if not folder:
+        return 'Folder inexisted'
+    if folder.isdeleted == 0:
+        return 'Folder has not been deleted'
+    if not havePowerToDeleteFolder(user, folder):
+        return 'no permission'
+    folder.delete()
+    return 'true'
+
+def recoverFolder(user, folderid):
+    folder = Folder.objects.filter(id = folderid).first()
+    if not folder:
+        return 'Folder inexisted'
+    if folder.isdeleted == 0:
+        return 'Folder has not been deleted'
+    if not havePowerToDeleteFolder(user, folder):
+        return 'no permission'
+    if folder.father and folder.father.isdeleted == 1:
+        folder.father = None
+    _recoverFolder(folder)
+    return 'true'
+
+def getDeletedFolder(user):
+    folders = []
+    folderList = Folder.objects.filter(creator = user, isdeleted = 1)
+    for folder in folderList:
+        name = folder.name
+        id = str(folder.id)
+        folders.append({'foldername': name, 'folderid': id})
+    return folders

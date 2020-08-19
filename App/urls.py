@@ -59,6 +59,9 @@ urlpatterns = [
     path('file-system/get-path-tree/', views.get_tree, name='get_tree'),
     path('folder/get-path/', views.folder_get_path, name = 'folder_get_path'),
     path('folder/delete/', views.folder_delete, name = 'folder_delete'),
+    path('folder/confirm-detele/', views.folder_confirm_delete, name = 'folder_confirm_delete'),
+    path('folder/recovery-detele/', views.folder_recovery_delete, name = 'folder_recovery_delete'),
+    path('folder/in-trash/', views.folder_in_trash, name = 'folder_in_trash'),
 
 
     #team

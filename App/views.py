@@ -529,6 +529,29 @@ def folder_delete(request):
     msg = doc_api.deleteFolder(user, folderid)
     return JsonResponse({'msg': msg})
 
+def folder_confirm_delete(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    folderid = request.POST.get('folderId')
+    msg = doc_api.confirmDeleteFolder(user, folderid)
+    return JsonResponse({'msg': msg})
+
+def folder_recovery_delete(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    folderid = request.POST.get('folderId')
+    msg = doc_api.recoverFolder(user, folderid)
+    return JsonResponse({'msg': msg})
+
+def folder_in_trash(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    folders = doc_api.getDeletedFolder(user)
+    return JsonResponse({'folders': folders})
+
 
 #etc
 def add_data(request):
