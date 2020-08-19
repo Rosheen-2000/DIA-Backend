@@ -23,6 +23,7 @@ def get_comment(docid):
     if doc:
         comments = []
         for comment in Comment.objects.filter(doc=doc):
+            ctime = datetime.datetime.strftime(comment.create_time, '%Y-%m-%d %H:%M')
             comments.append({
                 'commentid':comment.id,
                 'creatorname':comment.creator.name,

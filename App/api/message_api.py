@@ -49,8 +49,9 @@ def online_message(user):
         return {'basicmsg':0, 'mid':'', 'msgtype':0, 'content':'',
                'teamid':'', 'docid':'', 'createtime':''}
     else:
+        ctime = datetime.datetime.strftime(msg.create_time, '%Y-%m-%d %H:%M')
         dit = {'basicmsg':0, 'mid':str(msg.id), 'msgtype':msg.mode, 'content':msg.content,
-               'teamid':str(msg.team), 'docid':str(msg.doc), 'createtime':msg.create_time}
+               'teamid':str(msg.team), 'docid':str(msg.doc), 'createtime':ctime}
         msg.is_send = 1
         msg.save()
         return dit

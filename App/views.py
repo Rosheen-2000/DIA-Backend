@@ -484,12 +484,14 @@ def request_modify_doc(request):
     msg, content, tag = other_api.request_modify_doc(user, docid)
     return JsonResponse({'msg': msg, 'content': content, 'tag': tag})
 
+
 def update_doc_status(request):
     # 每次更新验证token
     user = tools.get_uid(request.META.get('HTTP_TOKEN'))
     if user is None:
         return JsonResponse({'msg': 'No permission'}, status=401)
     return JsonResponse({'msg': other_api.update_doc_status})
+
 
 def check_doc_status(request):
     other_api.check_doc_status()
