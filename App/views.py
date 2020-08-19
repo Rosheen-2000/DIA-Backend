@@ -599,6 +599,12 @@ def query_doc_status(request):
     msg, status, name = other_api.query_doc_status(user, docid)
     return JsonResponse({'msg': msg, 'status': status, 'name': name})
 
+def direct_quit(request):
+    '''轮训备用'''
+    # 不验证身份
+    tag = request.POST.get('tag')
+    other_api.direct_quit(int(tag))
+
 @accept_websocket
 def test_websocket(request):
     uname = request.GET.get('name')

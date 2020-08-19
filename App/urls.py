@@ -45,6 +45,7 @@ urlpatterns = [
     path('doc/updatestatus/', views.update_doc_status, name='update_doc_status'),
     path('doc/querystatus/', views.query_doc_status, name='query_doc_status'),
     path('doc/checkstatus/', views.check_doc_status, name='check_doc_status'),
+    path('doc/directquit/', views.direct_quit, name='direct_quit'),
     path('doc/getdetailinfo/', views.get_detail_info, name='get_detail_info'),
 
 

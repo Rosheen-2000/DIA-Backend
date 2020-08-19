@@ -75,3 +75,11 @@ def query_doc_status(user, docid):
         return 'Being modified...', 1, ''
     return 'true', 0, DocStatus.objects.get(doc=doc).user.name
 
+def direct_quit(tag):
+    doc_status = settings.editing_doc[tag]
+    del settings.editing_doc[tag]
+    DocStatus.objects.get(id=doc_status.id).delete()
+    doc = Doc.objects.get(id=doc_status.doc.id)
+    doc.edit_status = 0
+    doc.save()
+
