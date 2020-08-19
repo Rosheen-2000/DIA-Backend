@@ -212,3 +212,18 @@ def get_avatar_url(user):
     if user.avatar:
         return user.avatar.url
     return ''
+
+def get_folder_power(user, folder):
+    permissionless = 0
+
+    for file in folder.child.all():
+        if type(file) == type(Doc):
+            power = getPower(user, file)
+            if power < 4:
+                permissionless += 1
+        else:
+            permissionless += get_folder_power(user, file)
+
+    return permissionless
+
+

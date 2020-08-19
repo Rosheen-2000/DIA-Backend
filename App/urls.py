@@ -50,10 +50,13 @@ urlpatterns = [
     path('doc/space/folder/', views.doc_space_folder, name = 'doc_space_folder'),
     path('doc/folder/file/', views.doc_folder_file, name = 'doc_folder_file'),
     path('doc/folder/folder/', views.doc_folder_folder, name = 'doc_folder_folder'),
+    path('file-system/move/', views.move_file, name='move_file'),
 
 
     #folder
     path('folder/new-folder/', views.folder_new_folder, name = 'folder_new_folder'),
+    path('folder/rename/', views.rename_folder, name='rename_folder'),
+    path('file-system/get-path-tree/', views.get_tree, name='get_tree'),
 
 
     #team

@@ -470,6 +470,34 @@ def folder_new_folder(request):
     msg = doc_api.newFolder(user, folderName, folderid, teamid)
     return JsonResponse({'msg': msg})
 
+def rename_folder(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    fid = request.POST.get('folderId')
+    fname = request.POST.get('newName')
+    msg = doc_api.rename_folder(user, fid, fname)
+    return JsonResponse({'msg':msg})
+
+def move_file(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    type = request.POST.get('type')
+    id = request.POST.get('id')
+    folderId = request.POST.get('folderId')
+    spaceId = request.POST.get('spaceId')
+    msg = doc_api.move_file(user, type, id, folderId, spaceId)
+    return JsonResponse({'msg': msg})
+
+def get_tree(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    spaceId = request.POST.get('spaceId')
+    tree = doc_api.get_tree(user, spaceId)
+    return JsonResponse({'tree': tree})
+
 
 #etc
 def add_data(request):

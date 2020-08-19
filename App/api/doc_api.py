@@ -3,7 +3,7 @@ import datetime
 from django.utils import timezone
 
 from ..models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team, TeamMember, Favorite, Comment, Message, Folder, LikeRecord, DocStatus
-from ..tools import encrypt, decrypt, updateBrowse, getPower
+from ..tools import encrypt, decrypt, updateBrowse, getPower, get_folder_power
 
 
 #doc
@@ -422,3 +422,91 @@ def newFolder(user, folderName, folderid, teamid):
     folder.save()
     return 'true'
 
+def rename_folder(user, folderid, nname):
+    folder = Folder.objects.filter(id=folderid).first()
+    if folder is None:
+        return 'Wrong folder id'
+    folder.name = nname
+    folder.modify_time = timezone.now()
+    folder.save()
+    return 'true'
+
+def move_file(user, type, id, fid, tid):
+    if fid == '':
+        target = None
+    else:
+        target = Folder.objects.filter(id=fid).first()
+        if target is None:
+            return 'Wrong target'
+    if tid == '':
+        team = None
+    else:
+        team = Team.objects.filter(id=tid).first()
+        if team is None:
+            return 'Wrong team id'
+        if TeamMember.objects.filter(team=team, member=user).first() is None:
+            return 'You are not the member of this team'
+
+    if type == 'file':
+        doc = Doc.objects.filter(id=id).first()
+        if doc is None:
+            return 'Wrong file id'
+        role = getPower(user, doc)
+        if role < 4:
+            return 'No permission'
+        doc.father = target
+        doc.team = team
+        doc.save()
+        return 'true'
+    elif type == 'folder':
+        folder = Folder.objects.filter(id=id).first()
+        if not folder:
+            return 'Wrong folder id'
+        pless = get_folder_power(user, folder)
+        print(pless)
+        if pless != 0:
+            return 'No permission'
+        folder.father = target
+        folder.team = team
+        folder.save()
+        return 'true'
+
+def get_tree(user, teamid):
+    tree = []
+    if teamid != '':
+        team = Team.objects.filter(id=teamid).first()
+        if not team:
+            return {'type': 'file', 'name': '', 'id': '', 'children': []}
+    else:
+        team = None
+    if team:
+        docs = Doc.objects.filter(team=team, isdeleted=0, father=None)
+        folders = Folder.objects.filter(team=team, isdeleted=0, father=None)
+    else:
+        docs = Doc.objects.filter(creator=user, team=team, isdeleted=0, father=None)
+        folders = Folder.objects.filter(creator=user, team=team, isdeleted=0, father=None)
+    for doc in docs:
+        stree = []
+        dit = {'type': 'file', 'name': doc.name, 'id': str(doc.id), 'children': stree}
+        tree.append(dit)
+    for folder in folders:
+        stree = get_sub_tree(folder)
+        dit = {'type': 'folder', 'name': folder.name, 'id': str(folder.id), 'children': stree}
+        tree.append(dit)
+    return tree
+
+
+def get_sub_tree(folder):
+    tree = []
+    for file in folder.child.all():
+        if file.isdeleted == 1:
+            continue
+        if type(file) == type(Doc):
+            stree=[]
+            dit = {'type': 'file', 'name': file.name, 'id': str(file.id), 'children': stree}
+            tree.append(dit)
+        else:
+            stree = get_sub_tree(file)
+            dit = {'type': 'folder', 'name': file.name, 'id': str(file.id), 'children': stree}
+            tree.append(dit)
+    return tree
