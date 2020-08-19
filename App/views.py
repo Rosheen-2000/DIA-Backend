@@ -410,6 +410,21 @@ def offline_message(request):
     msgs = message_api.offline_message(user)
     return JsonResponse(msgs)
 
+def message_change_status(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    mid = request.POST.get('mid')
+    isread = request.POST.get('isread')
+    if isread == 'true':
+        isread = True
+    elif isread == 'false':
+        isread = False
+    else:
+        return JsonResponse({'msg': 'Field "isread" invalid'})
+    msg = message_api.changeStatus(user, mid, isread)
+    return JsonResponse({'msg': msg})
+
 
 #doc-system
 def doc_desktop_file(request):
@@ -497,6 +512,22 @@ def get_tree(request):
     spaceId = request.POST.get('spaceId')
     tree = doc_api.get_tree(user, spaceId)
     return JsonResponse({'tree': tree})
+
+def folder_get_path(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    folderid = request.POST.get('folderId')
+    ret = doc_api.getParentFolder(user, folderid)
+    return JsonResponse(ret)
+
+def folder_delete(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg': 'No permission'}, status=401)
+    folderid = request.POST.get('folderId')
+    msg = doc_api.deleteFolder(user, folderid)
+    return JsonResponse({'msg': msg})
 
 
 #etc

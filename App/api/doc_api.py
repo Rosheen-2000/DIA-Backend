@@ -3,7 +3,7 @@ import datetime
 from django.utils import timezone
 
 from ..models import User, Doc, DocPower, DocContent, DocTemplate, Browse, Team, TeamMember, Favorite, Comment, Message, Folder, LikeRecord, DocStatus
-from ..tools import encrypt, decrypt, updateBrowse, getPower, get_folder_power
+from ..tools import encrypt, decrypt, updateBrowse, getPower, get_folder_power, havePowerToDeleteFolder, _deleteFolder
 
 
 #doc
@@ -510,3 +510,32 @@ def get_sub_tree(folder):
             dit = {'type': 'folder', 'name': file.name, 'id': str(file.id), 'children': stree}
             tree.append(dit)
     return tree
+
+def getParentFolder(user, folderid):
+    folder = Folder.objects.filter(id = folderid, isdeleted = 0).first()
+    if not folder:
+        return {'spaceId': '', 'spaceName': '', 'path': ''}
+    if folder.team:
+        spaceId = str(folder.team.id)
+        spaceName = folder.team.name
+    else:
+        spaceId = ''
+        spaceName = ''
+    parent = folder.father
+    path = []
+    while parent:
+        id = str(parent.id)
+        name = parent.name
+        path.append({'folderId': id, 'folderName': name})
+        parent = parent.father
+    path.reverse()
+    return {'spaceId': spaceId, 'spaceName': spaceName, 'path': path}
+
+def deleteFolder(user, folderid):
+    folder = Folder.objects.filter(id = folderid, isdeleted = 0).first()
+    if not folder:
+        return 'Folder inexisted'
+    if not havePowerToDeleteFolder(user, folder):
+        return 'no permission'
+    _deleteFolder(folder)
+    return 'true'

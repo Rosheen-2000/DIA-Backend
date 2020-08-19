@@ -226,4 +226,26 @@ def get_folder_power(user, folder):
 
     return permissionless
 
+def havePowerToDeleteFolder(user, folder):
+    docList = Doc.objects.filter(isdeleted = 0, father = folder)
+    for doc in docList:
+        power = getPower(user, doc)
+        if power < 4:
+            return False
+    subFolderList = Folder.objects.filter(isdeleted = 0, father = folder)
+    for subFolder in subFolderList:
+        if not havePowerToDeleteFolder(user, subFolder):
+            return False
+    return True
 
+def _deleteFolder(folder):
+    # this function doesn't check the power, please call 'havePowerToDeleteFolder' to check the power first
+    docList = Doc.objects.filter(isdeleted = 0, father = folder)
+    for doc in docList:
+        doc.isdeleted = 1
+        doc.save()
+    subFolderList = Folder.objects.filter(isdeleted = 0, father = folder)
+    for subFolder in subFolderList:
+        _deleteFolder(subFolder)
+    folder.isdeleted = 1
+    folder.save()

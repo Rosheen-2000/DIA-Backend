@@ -56,3 +56,13 @@ def online_message(user):
         msg.save()
         return dit
 
+def changeStatus(user, mid, isread):
+    msg = Message.objects.filter(id = mid).first()
+    if not msg:
+        return 'Message inexisted'
+    if msg.receiver != user:
+        return 'This is not your message'
+    msg.is_read = isread
+    msg.save()
+    return 'true'
+

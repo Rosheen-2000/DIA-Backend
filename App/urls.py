@@ -57,6 +57,8 @@ urlpatterns = [
     path('folder/new-folder/', views.folder_new_folder, name = 'folder_new_folder'),
     path('folder/rename/', views.rename_folder, name='rename_folder'),
     path('file-system/get-path-tree/', views.get_tree, name='get_tree'),
+    path('folder/get-path/', views.folder_get_path, name = 'folder_get_path'),
+    path('folder/delete/', views.folder_delete, name = 'folder_delete'),
 
 
     #team
@@ -92,6 +94,7 @@ urlpatterns = [
     path('message/create_normal_message/', views.create_normal_message, name='create_normal_message'),
     path('message/online-message/', views.online_message, name='online_message'),
     path('message/offline-message/', views.offline_message, name='offline_message'),
+    path('message/changestatus/', views.message_change_status, name = 'message_change_status'),
 
 
     # etc
