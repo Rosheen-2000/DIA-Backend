@@ -605,8 +605,8 @@ def query_doc_status(request):
         return JsonResponse({'msg': 'No permission'}, status=401)
     docid = request.POST.get('docid')
     msg, status, name = other_api.query_doc_status(user, docid)
-    print('----------------------------------------------------')
-    print({'msg': msg, 'status': status, 'name': name})
+    # print('----------------------------------------------------')
+    # print({'msg': msg, 'status': status, 'name': name})
     return JsonResponse({'msg': msg, 'status': status, 'name': name})
 
 def direct_quit(request):

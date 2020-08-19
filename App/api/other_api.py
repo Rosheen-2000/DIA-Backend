@@ -59,11 +59,19 @@ def check_doc_status():
         ctime = datetime.datetime.now()
         for doc_status in dic.values():
             if ctime - doc_status.time > update_cycle:
+                id = doc_status.id
+                did = doc_status.doc.id
                 DocStatus.objects.get(id=doc_status.id).delete()
                 del dic[doc_status.id]
                 doc = Doc.objects.get(id=doc_status.doc.id)
                 doc.edit_status = 0
                 doc.save()
+                if DocStatus.objects.filter(id=id).first():
+                    print('delete fail: %d' % id)
+                if Doc.objects.filter(id=id).first():
+                    print('unlock fail: %d' % did)
+            else:
+                print(str(doc_status.id)+':'+str(ctime - doc_status.time))
         print('------------------------------')
 
 def query_doc_status(user, docid):

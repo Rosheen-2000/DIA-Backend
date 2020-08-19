@@ -138,7 +138,7 @@ def modify_doc_content(modifier, did, content):
 def get_all_templates():
     templates = []
     for template in DocTemplate.objects.all():
-        templates.append({'name':template.content.title, 'id':str(template.id)})
+        templates.append({'name':template.content.title, 'id':str(template.id), 'img': (template.picture.url if template.picture else '')})
     return templates
 
 def modifyDocTitle(user, docid, title):

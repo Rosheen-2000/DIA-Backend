@@ -20,6 +20,7 @@ urlpatterns = [
     path('userinfo/all/', views.userinfo_all, name='userinfo_all'),
     path('userinfo/changeavatar/', views.change_avatar, name='change_avatar'),
     path('userinfo/getteam/', views.getteam, name = 'getteam'),
+    path('userinfo/get-all/', views.userinfo_get_all, name = 'userinfo_get_all'),
 
 
     # doc
