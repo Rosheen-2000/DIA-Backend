@@ -179,3 +179,8 @@ def quit_team(user, teamid):
     Message.objects.create(receiver=team.creator, content=msg)
     return 'true'
 
+def getBasicInfo(teamid):
+    team = Team.objects.filter(id = teamid).first()
+    if not team:
+        return 'Team inexisted'
+    return team.name

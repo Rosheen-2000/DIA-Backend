@@ -392,6 +392,14 @@ def quit_team(request):
     msg = team_api.quit_team(user, teamid)
     return JsonResponse({'msg': msg})
 
+def team_get_basic_info(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    teamid = request.POST.get('spaceId')
+    teamname = team_api.getBasicInfo(teamid)
+    return JsonResponse({'spaceName': teamname})
+
 
 #message
 def get_unread_number(request):
@@ -643,5 +651,4 @@ def test_websocket(request):
 def my_test(request):
     tools.my_test()
     return HttpResponse('测试成功')
-
 

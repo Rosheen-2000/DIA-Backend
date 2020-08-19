@@ -82,6 +82,7 @@ urlpatterns = [
     path('team/removeuser/', views.remove_user, name='remove_user'),
     path('team/getpower/', views.get_team_power, name='get_team_power'),
     path('team/quit/', views.quit_team, name='quit_team'),
+    path('team/get-basic-info/', views.team_get_basic_info, name = 'team_get_basic_info'),
 
 
     #user
