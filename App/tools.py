@@ -221,13 +221,21 @@ def get_avatar_url(user):
 def get_folder_power(user, folder):
     permissionless = 0
 
-    for file in folder.child.all():
-        if type(file) == type(Doc):
-            power = getPower(user, file)
-            if power < 4:
-                permissionless += 1
-        else:
-            permissionless += get_folder_power(user, file)
+    docs = Doc.objects.filter(father=folder, isdeleted=0)
+    folders = Folder.objects.filter(father=folder, isdeleted=0)
+    for doc in docs:
+        power = getPower(user, doc)
+        if power < 4:
+            permissionless += 1
+    for folder in folders:
+        permissionless += get_folder_power(user, folder)
+    # for file in folder.child.all():
+    #     if type(file) == type(Doc):
+    #         power = getPower(user, file)
+    #         if power < 4:
+    #             permissionless += 1
+    #     else:
+    #         permissionless += get_folder_power(user, file)
 
     return permissionless
 

@@ -506,17 +506,30 @@ def get_tree(user, teamid):
 
 def get_sub_tree(folder):
     tree = []
-    for file in folder.child.all():
-        if file.isdeleted == 1:
-            continue
-        if type(file) == type(Doc()):
-            stree=[]
-            dit = {'type': 'file', 'name': file.content.title, 'id': str(file.id), 'children': stree}
-            tree.append(dit)
-        else:
-            stree = get_sub_tree(file)
-            dit = {'type': 'folder', 'name': file.name, 'id': str(file.id), 'children': stree}
-            tree.append(dit)
+    docs = Doc.objects.filter(isdeleted=0, father=folder)
+    folders = Folder.objects.filter(isdeleted=0, father=folder)
+    for doc in docs:
+        stree = []
+        dit = {'type': 'file', 'name': doc.content.title, 'id': str(doc.id), 'children': stree}
+        tree.append(dit)
+    for folder in folders:
+        stree = get_sub_tree(folder)
+        dit = {'type': 'folder', 'name': folder.name, 'id': str(folder.id), 'children': stree}
+        tree.append(dit)
+    # files =
+    # for file in folder.child.all():
+    #     if file.isdeleted == 1:
+    #         continue
+    #     if folder.id == 6:
+    #         print(file.id)
+    #     if type(file) == type(Doc()):
+    #         stree=[]
+    #         dit = {'type': 'file', 'name': file.content.title, 'id': str(file.id), 'children': stree}
+    #         tree.append(dit)
+    #     else:
+    #         stree = get_sub_tree(file)
+    #         dit = {'type': 'folder', 'name': file.name, 'id': str(file.id), 'children': stree}
+    #         tree.append(dit)
     return tree
 
 def getParentFolder(user, folderid):
