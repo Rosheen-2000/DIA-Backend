@@ -495,7 +495,7 @@ def get_tree(user, teamid):
         folders = Folder.objects.filter(creator=user, team=team, isdeleted=0, father=None)
     for doc in docs:
         stree = []
-        dit = {'type': 'file', 'name': doc.name, 'id': str(doc.id), 'children': stree}
+        dit = {'type': 'file', 'name': doc.content.title, 'id': str(doc.id), 'children': stree}
         tree.append(dit)
     for folder in folders:
         stree = get_sub_tree(folder)
@@ -511,7 +511,7 @@ def get_sub_tree(folder):
             continue
         if type(file) == type(Doc):
             stree=[]
-            dit = {'type': 'file', 'name': file.name, 'id': str(file.id), 'children': stree}
+            dit = {'type': 'file', 'name': file.content.title, 'id': str(file.id), 'children': stree}
             tree.append(dit)
         else:
             stree = get_sub_tree(file)
