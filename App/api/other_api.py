@@ -42,7 +42,7 @@ def request_modify_doc(user, docid):
     doc.edit_status = 1
     doc.save()
     doc_status = DocStatus.objects.create(user=user, doc=doc)
-    settings.EDITING_DOC[doc_status.id] = doc_status # 伪全局字典维护所有写状态文件
+    settings.EDITING_DOC[str(doc_status.id)] = doc_status # 伪全局字典维护所有写状态文件
     return 'true', doc_status.id
 
 def update_doc_status(tag):
