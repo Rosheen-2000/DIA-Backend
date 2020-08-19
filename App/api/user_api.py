@@ -99,3 +99,13 @@ def getTeam(uid):
         name = name.name
         teamList.append({'name':name,'id':str(teamIdList[i][0])})
     return {'msg':'true','teamlist':teamList}
+
+def getUserAllInfoWithoutCheck(userid):
+    user = User.objects.filter(id = userid).first()
+    if not user:
+        return 'User inexisted', '', '', '', ''
+    avatar = get_avatar_url(user)
+    mail = user.mail if user.mail else ''
+    tel = user.tel if user.tel else ''
+    return 'true', user.name, avatar, mail, tel
+

@@ -88,6 +88,14 @@ def change_avatar(request):
     msg = user_api.change_newavatar(user, new_avatar)
     return JsonResponse({'msg':msg})
 
+def userinfo_get_all(request):
+    user = tools.get_uid(request.META.get('HTTP_TOKEN'))
+    if user is None:
+        return JsonResponse({'msg':'No permission'}, status=401)
+    userid = request.POST.get('userId')
+    msg, uname, avatar, mail, tel = user_api.getUserAllInfoWithoutCheck(userid)
+    return JsonResponse({'msg': msg, 'uname':uname, 'avatar':avatar, 'mail':mail, 'phoneno':tel})
+
 
 # doc
 def deletedoc(request):
@@ -597,6 +605,8 @@ def query_doc_status(request):
         return JsonResponse({'msg': 'No permission'}, status=401)
     docid = request.POST.get('docid')
     msg, status, name = other_api.query_doc_status(user, docid)
+    print('----------------------------------------------------')
+    print({'msg': msg, 'status': status, 'name': name})
     return JsonResponse({'msg': msg, 'status': status, 'name': name})
 
 def direct_quit(request):

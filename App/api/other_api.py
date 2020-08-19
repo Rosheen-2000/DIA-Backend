@@ -72,13 +72,13 @@ def query_doc_status(user, docid):
     if getPower(user, doc) < 2:
         return 'No permission.'
     if doc.edit_status:
-        return 'Being modified...', 1, ''
+        return 'Being modified...', 1, DocStatus.objects.get(doc=doc).user.name
 
-    docs = DocStatus.objects.filter(doc=doc).first()
-    if docs is None:
-        DocStatus.objects.create(doc=doc, user=user)
+    # docs = DocStatus.objects.filter(doc=doc).first()
+    # if docs is None:
+    #     DocStatus.objects.create(doc=doc, user=user)
 
-    return 'true', 0, DocStatus.objects.get(doc=doc).user.name
+    return 'true', 0, ''
 
 def direct_quit(tag):
     doc_status = settings.EDITING_DOC[str(tag)]
