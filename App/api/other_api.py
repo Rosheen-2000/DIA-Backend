@@ -46,9 +46,9 @@ def request_modify_doc(user, docid):
     return 'true', doc_status.id
 
 def update_doc_status(tag):
-    if settings.EDITING_DOC.get(tag):
+    if settings.EDITING_DOC.get(str(tag)):
         # 跳过数据库，仅在字典中更新？
-        settings.EDITING_DOC[tag].time = datetime.datetime.now()
+        settings.EDITING_DOC[str(tag)].time = datetime.datetime.now()
         return 'true'
     return 'Tag not found.'
 
@@ -81,8 +81,8 @@ def query_doc_status(user, docid):
     return 'true', 0, DocStatus.objects.get(doc=doc).user.name
 
 def direct_quit(tag):
-    doc_status = settings.EDITING_DOC[tag]
-    del settings.EDITING_DOC[tag]
+    doc_status = settings.EDITING_DOC[str(tag)]
+    del settings.EDITING_DOC[str(tag)]
     DocStatus.objects.get(id=doc_status.id).delete()
     doc = Doc.objects.get(id=doc_status.doc.id)
     doc.edit_status = 0
