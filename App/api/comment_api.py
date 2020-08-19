@@ -12,7 +12,7 @@ def new_comment(user, docid, content):
         power = DocPower.objects.filter(doc=doc, member=user).first()
         if (power and power.is_commented == 1) or doc.type >= 1:
             Comment.objects.create(creator=user, content=content, doc=doc)
-            msg = "Your doc '{0}' has been commented".format(doc.content.title)
+            msg = "您的文档《{0}》刚刚被人评论了哟，请注意查看(oﾟvﾟ)ノ".format(doc.content.title)
             Message.objects.create(receiver=doc.creator, content=msg, mode=2, doc=doc)
             return 'true'
         return 'No permission'

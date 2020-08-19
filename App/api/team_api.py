@@ -87,7 +87,7 @@ def invite(user, teamid, uidList):
         if team_member:
             # return 'This person is already in the team'
             continue
-        content = 'from team {0}'.format(team.name)  # 邀请消息文本格式？
+        content = '叮咚，您刚刚收到了一份来自队伍‘{0}’的入队邀请(●ˇ∀ˇ●)'.format(team.name)  # 邀请消息文本格式？
         Message.objects.create(team=team, content=content, receiver=invitee, mode=1)
         cnt += 1
     if cnt == len(uidList):
@@ -126,7 +126,7 @@ def deal_invitation(user, teamid, handle):
             # else:
             #     DocPower.objects.create(doc=doc, member=user, role=1, is_commented=1)
     # 生成处理结果消息
-    content = 'The invitation to {0} has been {1}.'.format(user.name, 'accepted' if handle == 'true' else 'declined')
+    content = '对{0}的入队邀请被{1}啦'.format(user.name, '同意' if handle == 'true' else '拒绝')
     Message.objects.create(content=content, receiver=team.creator, mode=0)
     return 'true'
 
@@ -173,7 +173,9 @@ def quit_team(user, teamid):
     for doc in Doc.objects.filter(creator=user, team=team):
         doc.content.delete()
         doc.delete()
-    msg = 'You have successfully exited the "{0}" team'.format(team.name)
+    msg = '您已经成功退出了"{0}"小队。期待您的再次加入(*^_^*)'.format(team.name)
     Message.objects.create(receiver=user, content=msg)
+    msg = '队员{0}已经退出了您的’{1}‘小队，愿以后有缘再相聚＞﹏＜'.format(user.name, team.name)
+    Message.objects.create(receiver=team.creator, content=msg)
     return 'true'
 
