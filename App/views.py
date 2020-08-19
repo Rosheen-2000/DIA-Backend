@@ -573,8 +573,8 @@ def request_modify_doc(request):
     if user is None:
         return JsonResponse({'msg': 'No permission'}, status=401)
     docid = request.POST.get('docid')
-    msg, content, tag = other_api.request_modify_doc(user, docid)
-    return JsonResponse({'msg': msg, 'content': content, 'tag': tag})
+    msg, tag = other_api.request_modify_doc(user, docid)
+    return JsonResponse({'msg': msg, 'tag':tag})
 
 
 def update_doc_status(request):

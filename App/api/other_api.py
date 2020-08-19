@@ -34,16 +34,16 @@ def online_message(uname):
 def request_modify_doc(user, docid):
     doc = Doc.objects.filter(id=docid).first()
     if not doc:
-        return 'Document not found.', '', ''
+        return 'Document not found.', ''
     if getPower(user, doc) < 2:
-        return 'No permisson to modify.', '', ''
-    if doc.edit_status == 1: # 不允许其他用户包括正在修改的用户尝试再次修改
+        return 'No permisson to modify.', ''
+    if doc.edit_status: # 不允许其他用户包括正在修改的用户尝试再次修改
         return 'Being modified...', ''
     doc.edit_status = 1
     doc.save()
     doc_status = DocStatus.objects.create(user=user, doc=doc)
-    settings.editing_doc[doc_status.id](doc_status) # 伪全局字典维护所有写状态文件
-    return 'true', doc.content, doc_status.id
+    settings.EDITING_DOC[doc_status.id] = doc_status # 伪全局字典维护所有写状态文件
+    return 'true', doc_status.id
 
 def update_doc_status(tag):
     if settings.editing_doc.get(tag):

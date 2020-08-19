@@ -135,4 +135,4 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
-editing_doc = {}
+EDITING_DOC = {}
