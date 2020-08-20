@@ -71,8 +71,9 @@ def check_doc_status():
                 if Doc.objects.filter(id=id).first().edit_status:
                     print('unlock fail: %d' % did)
             else:
-                print(str(doc_status.id)+':'+str(ctime - doc_status.time))
+                print(str(doc_status.id) + ':' + str(ctime - doc_status.time))
         print('------------------------------')
+
 
 def query_doc_status(user, docid):
     doc = Doc.objects.filter(id=docid).first()
@@ -99,3 +100,4 @@ def direct_quit(tag):
         doc = Doc.objects.get(id=doc_status.doc.id)
         doc.edit_status = 0
         doc.save()
+

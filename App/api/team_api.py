@@ -103,11 +103,11 @@ def deal_invitation(user, teamid, handle):
         return 'The team does not exist.'
     if handle not in ('true', 'false'):
         return 'Handle type error.'
-    message = Message.objects.filter(team=team, receiver=user, mode=1).first()
+    message = Message.objects.filter(team=team, receiver=user, mode=1, is_read=0).first()
     if not message:
         return 'The invitation does not exist.'
-    if message.is_read: # 防止重复处理
-        return 'The invitation has been dealt.'
+    # if message.is_read: # 防止重复处理
+    #     return 'The invitation has been dealt.'
     tmember = TeamMember.objects.filter(team=team, member=user).first()
     if tmember:
         return 'You are already the team member'
@@ -147,7 +147,7 @@ def remove_user(handler, teamid, uid):
     team_member.delete()
     for docpower in DocPower.objects.filter(member=user, doc__team=team):
         docpower.delete()
-    Message.objects.create(receiver=user, content='You were kicked out of the team.')
+    Message.objects.create(receiver=user, content='您已经被移出‘{0}’小队<(＿　＿)>'.format(team.name))
     return 'true'
 
 def get_power(user, teamid):
